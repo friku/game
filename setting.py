@@ -28,11 +28,14 @@ class field:
     HP = 20
     PP = 0
     
-    def __init__(self,playerName,BTDeck):
+    TurnNum = 0
+    
+    def __init__(self,playerName,BTDeck,PlayerID):
         self.playerName = playerName
         self.BTDeck = BTDeck
         self.hand = []
         self.place = []
+        self.PlayerID = PlayerID
         
     def draw(self,drawNum):
         for i in range(drawNum):
@@ -47,11 +50,37 @@ class field:
  
 
 class BattleSystem:
-    def BattlePreparation(self,BTDeck1,BTDeck2):
-        Field1 = field("player1",BTDeck1)
-        Field2 = field("player2",BTDeck2)
-        Field1.Marigan()
-        Field2.Marigan()
+    def BattlePreparation(self,BTDeck0,BTDeck1):
+        self.Field = []
+        self.Field.append(field("player0",BTDeck0,0))
+        self.Field.append(field("player1",BTDeck1,1))
+        self.Field[0].Marigan()
+        self.Field[1].Marigan()
+    
+    def changeTurn(PlayerID,turn):
+        NextPlayerID = 1-PlayerID
+        turn(NextPlayerID)
+    
+    def turn(self,PlayerID):
+        ENDFlag = 0
+        while ENDFlag == 0:
+            print(str(self.Field[PlayerID].playerName) + "turn")
+            SelectCard = int(input('カードを選択0~14>> ')) #0~4 placeのカード　5~13手札 14END
+            
+            if SelectCard <= 4:
+                print(self.Field[PlayerID].place[SelectCard].name)
+            elif SelectCard <=13:
+                SelectHandID = SelectCard - 5 
+                print(self.Field[PlayerID].hand[SelectHandID].name)
+                self.Field[PlayerID].PlayCard(SelectHandID)
+            
+            elif SelectCard == 14:
+                print(str(self.Field[PlayerID].playerName) + "END")
+                ENDFlag = 1
+            else:
+                print("Unexpected Number.You should select from 0 to 14.")
+        self.changeTurn(self.Field.PlayerID,self.turn)
+        
         
 class BattleDeck:
     deck = []
