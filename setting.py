@@ -46,6 +46,10 @@ class field:
         
     def Marigan(self,):
         self.draw(3)
+    
+    def changeHP(self,plusHP):
+        self.HP = self.HP + plusHP
+        print(str(self.playerName) +"HP:" + str(self.HP))
  
 
 class BattleSystem:
@@ -64,6 +68,9 @@ class BattleSystem:
         Follower0.changeHP(-Follower1.AP)
         Follower1.changeHP(-Follower0.AP)
     
+    def AttackFace(self,Follower0,EnemyPlayer):
+        EnemyPlayer.changeHP(-Follower0.AP)
+    
     
         
         
@@ -78,10 +85,16 @@ class BattleSystem:
                 print(self.Field[PlayerID].place[SelectCard].name)
                 SelectCard = self.Field[PlayerID].place[SelectCard]
                 SelectEnemyCardID = int(input('相手のカードか顔を選択0~5>> ')) #0~5 相手placeのカード　0~4手札 5顔
-                Enemy = self.Field[1-PlayerID].place[SelectEnemyCardID]
-                print("Enemy")
-                print(Enemy)
-                self.fight(SelectCard,Enemy)
+                if SelectEnemyCardID <=4:
+                    Enemy = self.Field[1-PlayerID].place[SelectEnemyCardID]
+                    print("Enemy")
+                    print(Enemy)
+                    self.fight(SelectCard,Enemy)
+                elif SelectEnemyCardID == 5:
+                    EnemyPlayer = self.Field[1-PlayerID]
+                    self.AttackFace(SelectCard,EnemyPlayer)
+               
+                
                 
             elif SelectCard <=13:
                 SelectHandID = SelectCard - 5 
