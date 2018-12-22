@@ -27,6 +27,7 @@ class field:
     def __init__(self,playerName,BTDeck,PlayerID):
         self.HP = 20
         self.PP = 0
+        self.MaxPP = 0
         self.TurnNum = 0
         self.cemetery = []
         self.playerName = playerName
@@ -58,7 +59,7 @@ class field:
     
     def info(self,):
         print("playerName,HP,PP,TurnNum,len(hand),len(place)")
-        print(self.playerName,self.HP,self.PP,self.TurnNum,len(self.hand),len(self.place),len(self.cemetery))
+        print(self.playerName,self.HP,self.MaxPP,self.PP,self.TurnNum,len(self.hand),len(self.place),len(self.cemetery))
         print("Hand info")
         for card in self.hand:
             print(card.name,card.HP,card.AP)
@@ -90,39 +91,55 @@ class BattleSystem:
     
     def AttackFace(self,Follower0,EnemyPlayer):
         EnemyPlayer.changeHP(-Follower0.AP)
+        
+    def CostCheck(self,Field,cost):
+        if  cost <= Field.PP:
+            Field.PP -=cost
+            return True
+        else:
+            print("コストが足りません")
+            return False
+    def setPP(self,Field):
+        Field.PP = Field.MaxPP
     
     
     def turn(self,PlayerID):
         ENDFlag = 0
+        self.Field[PlayerID].MaxPP += 1
+        self.setPP(self.Field[PlayerID])
         while ENDFlag == 0:
             print(str(self.Field[PlayerID].playerName) + "turn")
             SelectFieldID = int(input('カードを選択0~15>> ')) #0~4 placeのカード　5~13手札 14END 15自情報取得　16敵情報取得
             
-            if SelectFieldID <= 4:
+            if SelectFieldID <= 4:#自分のPlace選択
                 print(self.Field[PlayerID].place[SelectFieldID].name)
                 SelectCard = self.Field[PlayerID].place[SelectFieldID]
                 SelectEnemyFieldID = int(input('相手のカードか顔を選択0~5>> ')) #0~5 相手placeのカード　0~4手札 5顔
-                if SelectEnemyFieldID <=4:
+                
+                if SelectEnemyFieldID <=4:#相手のPlace選択
                     Enemy = self.Field[1-PlayerID].place[SelectEnemyFieldID]
                     print("Enemy")
                     print(Enemy)
                     self.fight(SelectCard,Enemy,SelectFieldID,SelectEnemyFieldID,PlayerID)#交戦
-                elif SelectEnemyFieldID == 5:
+                    
+                elif SelectEnemyFieldID == 5:#相手の顔選択
                     EnemyPlayer = self.Field[1-PlayerID]
                     self.AttackFace(SelectCard,EnemyPlayer)
                 
                 
-            elif SelectFieldID <=13:
+            elif SelectFieldID <=13:#自分の手札選択
                 SelectHandID = SelectFieldID - 5 
                 print(self.Field[PlayerID].hand[SelectHandID].name)
-                self.Field[PlayerID].PlayCard(SelectHandID)
+                SelectCardCost = self.Field[PlayerID].hand[SelectHandID].cost
+                if self.CostCheck(self.Field[PlayerID],SelectCardCost) == True:
+                    self.Field[PlayerID].PlayCard(SelectHandID)
             
-            elif SelectFieldID <= 14:
+            elif SelectFieldID <= 14:#END
                 print(str(self.Field[PlayerID].playerName) + "END")
                 ENDFlag = 1
-            elif SelectFieldID == 15:
+            elif SelectFieldID == 15:#自分の情報
                 self.Field[PlayerID].info()
-            elif SelectFieldID == 16:
+            elif SelectFieldID == 16:#相手の情報
                 self.Field[1-PlayerID].info()
             else:
                 print("Unexpected Number.You should select from 0 to 14.")
