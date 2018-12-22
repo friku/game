@@ -16,12 +16,11 @@ class follower(card):
         self.AP = AP
         self.HP = HP
         
-    def attack(self,enemy):
-        self.HP = self.HP - enemy.AP
-        enemy.atacked(self)
+    def changeHP(self,plusHP):
+        self.HP = self.HP + plusHP
+        print(self.HP)
         
-    def attacked(self,enemy):
-        self.HP = self.HP - enemy.AP
+
         
 
 class field:
@@ -57,9 +56,17 @@ class BattleSystem:
         self.Field[0].Marigan()
         self.Field[1].Marigan()
     
-    def changeTurn(PlayerID,turn):
+    def changeTurn(self,PlayerID,turn):
         NextPlayerID = 1-PlayerID
         turn(NextPlayerID)
+    
+    def fight(self,Follower0,Follower1):
+        Follower0.changeHP(-Follower1.AP)
+        Follower1.changeHP(-Follower0.AP)
+    
+    
+        
+        
     
     def turn(self,PlayerID):
         ENDFlag = 0
@@ -69,6 +76,13 @@ class BattleSystem:
             
             if SelectCard <= 4:
                 print(self.Field[PlayerID].place[SelectCard].name)
+                SelectCard = self.Field[PlayerID].place[SelectCard]
+                SelectEnemyCardID = int(input('相手のカードか顔を選択0~5>> ')) #0~5 相手placeのカード　0~4手札 5顔
+                Enemy = self.Field[1-PlayerID].place[SelectEnemyCardID]
+                print("Enemy")
+                print(Enemy)
+                self.fight(SelectCard,Enemy)
+                
             elif SelectCard <=13:
                 SelectHandID = SelectCard - 5 
                 print(self.Field[PlayerID].hand[SelectHandID].name)
@@ -79,7 +93,7 @@ class BattleSystem:
                 ENDFlag = 1
             else:
                 print("Unexpected Number.You should select from 0 to 14.")
-        self.changeTurn(self.Field.PlayerID,self.turn)
+        self.turn(1-PlayerID)
         
         
 class BattleDeck:
