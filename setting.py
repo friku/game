@@ -21,8 +21,6 @@ class follower(card):
         print(self.HP)
         
 
-        
-
 class field:
     HP = 20
     PP = 0
@@ -41,8 +39,7 @@ class field:
             self.hand.append(self.BTDeck.deck.pop(0))
         
     def PlayCard(self,handID):
-        card = self.hand[handID]
-        self.place.append(card)
+        self.place.append(self.hand.pop(handID))
         
     def Marigan(self,):
         self.draw(3)
@@ -71,9 +68,6 @@ class BattleSystem:
     def AttackFace(self,Follower0,EnemyPlayer):
         EnemyPlayer.changeHP(-Follower0.AP)
     
-    
-        
-        
     
     def turn(self,PlayerID):
         ENDFlag = 0
@@ -116,7 +110,6 @@ class BattleDeck:
         
     def addCardToDeck(self,card):
         self.deck.append(card)
-    
     
         
 #戦闘準備用
