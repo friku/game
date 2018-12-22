@@ -9,17 +9,23 @@ from setting import follower,field,BattleDeck,makeCard,makeDeck,BattleSystem
 
 def main():
     cardMaker = makeCard()
-    Faiter = cardMaker.makeFollower(name="Faiter",cost=2,AP=2,HP=2)
+    Faiters = []
+    for i in range(40):
+        Faiters.append(cardMaker.makeFollower(name="Faiter"+str(i),cost=2,AP=2,HP=2))
+     
+    ghosts = []
+    for i in range(40):
+        ghosts.append(cardMaker.makeFollower(name="ghost"+str(i),cost=1,AP=1,HP=1))
     
-    DeckMaker = makeDeck()
-    print(DeckMaker.deck)
-    Deck = DeckMaker.makeDeck(Faiter)
-    BTDeck = BattleDeck(Deck)
+    BTDeck = BattleDeck(Faiters)
+    BTGDeck = BattleDeck(ghosts)
     print(BTDeck.deck[0].name)
     print("Got Deck")
+    print(BTGDeck.deck[0].name)
+    print("Got GDeck")
     
     BTSystem = BattleSystem()
-    BTSystem.BattlePreparation(BTDeck,BTDeck)
+    BTSystem.BattlePreparation(BTDeck,BTGDeck)
     print(BTSystem.Field[0].playerName)
     BTSystem.turn(0)
     

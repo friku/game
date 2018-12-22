@@ -9,6 +9,7 @@ class card:
     def __init__(self,name,cost):
         self.name = name
         self.cost = cost
+    
 
 class follower(card):
     def __init__(self,name,cost,AP,HP):
@@ -18,21 +19,22 @@ class follower(card):
         
     def changeHP(self,plusHP):
         self.HP = self.HP + plusHP
-        print(self.HP)
+        print(str(self.name) +"HP:" + str(self.HP))
+        return self.HP
         
 
 class field:
-    HP = 20
-    PP = 0
-    
-    TurnNum = 0
-    
     def __init__(self,playerName,BTDeck,PlayerID):
+        self.HP = 20
+        self.PP = 0
+        self.TurnNum = 0
+        self.cemetery = []
         self.playerName = playerName
         self.BTDeck = BTDeck
         self.hand = []
         self.place = []
         self.PlayerID = PlayerID
+        
         
     def draw(self,drawNum):
         for i in range(drawNum):
@@ -47,7 +49,24 @@ class field:
     def changeHP(self,plusHP):
         self.HP = self.HP + plusHP
         print(str(self.playerName) +"HP:" + str(self.HP))
- 
+    
+    def GoToCementery(self,FieldID):
+        if FieldID <= 4:
+            self.cemetery.append(self.place.pop(FieldID))
+        elif FieldID <= 14:
+            self.cemetery.append(self.hand.pop(FieldID-5))
+    
+    def info(self,):
+        print("playerName,HP,PP,TurnNum,len(hand),len(place)")
+        print(self.playerName,self.HP,self.PP,self.TurnNum,len(self.hand),len(self.place),len(self.cemetery))
+        print("Hand info")
+        for card in self.hand:
+            print(card.name,card.HP,card.AP)
+        print("Place info")
+        for card in self.place:
+            print(card.name,card.HP,card.AP)
+        
+        
 
 class BattleSystem:
     def BattlePreparation(self,BTDeck0,BTDeck1):
@@ -57,13 +76,17 @@ class BattleSystem:
         self.Field[0].Marigan()
         self.Field[1].Marigan()
     
-    def changeTurn(self,PlayerID,turn):
-        NextPlayerID = 1-PlayerID
-        turn(NextPlayerID)
     
-    def fight(self,Follower0,Follower1):
+    def fight(self,Follower0,Follower1,SelectFieldID,SelectEnemyFieldID,PlayerID):#交戦処理
         Follower0.changeHP(-Follower1.AP)
         Follower1.changeHP(-Follower0.AP)
+        if self.Field[PlayerID].place[SelectFieldID].HP <= 0: #破壊判定処理
+            self.Field[PlayerID].GoToCementery(SelectFieldID)
+        if self.Field[1-PlayerID].place[SelectEnemyFieldID].HP <= 0: #破壊判定処理
+            self.Field[1-PlayerID].GoToCementery(SelectEnemyFieldID)
+    
+#    def PostFight(self,)#交戦後処理
+        
     
     def AttackFace(self,Follower0,EnemyPlayer):
         EnemyPlayer.changeHP(-Follower0.AP)
@@ -73,31 +96,34 @@ class BattleSystem:
         ENDFlag = 0
         while ENDFlag == 0:
             print(str(self.Field[PlayerID].playerName) + "turn")
-            SelectCard = int(input('カードを選択0~14>> ')) #0~4 placeのカード　5~13手札 14END
+            SelectFieldID = int(input('カードを選択0~15>> ')) #0~4 placeのカード　5~13手札 14END 15自情報取得　16敵情報取得
             
-            if SelectCard <= 4:
-                print(self.Field[PlayerID].place[SelectCard].name)
-                SelectCard = self.Field[PlayerID].place[SelectCard]
-                SelectEnemyCardID = int(input('相手のカードか顔を選択0~5>> ')) #0~5 相手placeのカード　0~4手札 5顔
-                if SelectEnemyCardID <=4:
-                    Enemy = self.Field[1-PlayerID].place[SelectEnemyCardID]
+            if SelectFieldID <= 4:
+                print(self.Field[PlayerID].place[SelectFieldID].name)
+                SelectCard = self.Field[PlayerID].place[SelectFieldID]
+                SelectEnemyFieldID = int(input('相手のカードか顔を選択0~5>> ')) #0~5 相手placeのカード　0~4手札 5顔
+                if SelectEnemyFieldID <=4:
+                    Enemy = self.Field[1-PlayerID].place[SelectEnemyFieldID]
                     print("Enemy")
                     print(Enemy)
-                    self.fight(SelectCard,Enemy)
-                elif SelectEnemyCardID == 5:
+                    self.fight(SelectCard,Enemy,SelectFieldID,SelectEnemyFieldID,PlayerID)#交戦
+                elif SelectEnemyFieldID == 5:
                     EnemyPlayer = self.Field[1-PlayerID]
                     self.AttackFace(SelectCard,EnemyPlayer)
-               
                 
                 
-            elif SelectCard <=13:
-                SelectHandID = SelectCard - 5 
+            elif SelectFieldID <=13:
+                SelectHandID = SelectFieldID - 5 
                 print(self.Field[PlayerID].hand[SelectHandID].name)
                 self.Field[PlayerID].PlayCard(SelectHandID)
             
-            elif SelectCard == 14:
+            elif SelectFieldID <= 14:
                 print(str(self.Field[PlayerID].playerName) + "END")
                 ENDFlag = 1
+            elif SelectFieldID == 15:
+                self.Field[PlayerID].info()
+            elif SelectFieldID == 16:
+                self.Field[1-PlayerID].info()
             else:
                 print("Unexpected Number.You should select from 0 to 14.")
         self.turn(1-PlayerID)
@@ -119,12 +145,11 @@ class makeCard:
         return card
         
 class makeDeck:
-    deck = []
-        
-    def makeDeck(self,card):
+    def makeDeck(self,cards):
+        deck = []
         for i in range(40):
-            self.deck.append(card)
-        return self.deck
+            deck.append(card)
+        return deck
         
             
         
