@@ -18,9 +18,9 @@ class redirect_stdin(contextlib._RedirectStream):
 
 class Test(unittest.TestCase):
     def makeInputData(self,commnet):
-        data = ""
-        for i in range(6):
-            data += "14\n14\n14\n14\n6\n15\n16\n14\n6\n15\n16\n14\n6\n15\n16\n14\n0\n0\n14\n6\n15\n16\n14\n6\n15\n16\n14\n6\n15\n16\n14\n0\n5\n"
+        data = "14\n14\n14\n14\n"
+        for i in range(20):
+            data += "6\n15\n16\n14\n6\n15\n16\n14\n0\n0\n14\n6\n15\n16\n0\n5\n"
         return data
     
     def test_turn(self):

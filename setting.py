@@ -59,7 +59,7 @@ class field:
             self.cemetery.append(self.hand.pop(FieldID-5))
     
     def info(self,):
-        print("playerName,HP,PP,TurnNum,len(hand),len(place)")
+        print("playerName:%s,HP:%d,MaxPP:%d,PP:%d,TurnNum:%d,len(hand):%d,len(place):%d,len(cemetery):%d" %(self.playerName,self.HP,self.MaxPP,self.PP,self.TurnNum,len(self.hand),len(self.place),len(self.cemetery)))
         print(self.playerName,self.HP,self.MaxPP,self.PP,self.TurnNum,len(self.hand),len(self.place),len(self.cemetery))
         print("Hand info")
         for card in self.hand:
@@ -107,6 +107,7 @@ class BattleSystem:
     
     def turn(self,PlayerID):
         ENDFlag = 0
+        self.Field[PlayerID].TurnNum += 1
         self.Field[PlayerID].MaxPP += 1
         self.setPP(self.Field[PlayerID])
         self.drawPhase(PlayerID)
