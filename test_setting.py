@@ -1,35 +1,46 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sun Dec 23 00:38:40 2018
+Created on Mon Dec 24 00:00:06 2018
 
-@author: 陸
+@author: riku
 """
-
-#import pytest
-#from setting import Setting
-
+import sys
 import pytest
-from calculator import Calculator
+import unittest
+from main import main
+from setting import follower,field,BattleDeck,makeCard,makeDeck,BattleSystem
+from io import StringIO
+import contextlib
 
-def pytest_funcarg__calc():
-    return Calculator()
+class redirect_stdin(contextlib._RedirectStream):
+    _stream = "stdin"
 
-@pytest.mark.parametrize("a, b, r", [(9, 8, 17), (7, 6, 13), (5, 4, 9), (3, 2, 5), (1, 0, 1)])
-def test_add(calc, a, b, r):
-    assert calc.add(a, b) == r
+class Test(unittest.TestCase):
+    def makeInputData(self,commnet):
+        data = ""
+        for i in range(6):
+            data += "14\n14\n14\n14\n6\n15\n16\n14\n6\n15\n16\n14\n6\n15\n16\n14\n0\n0\n14\n6\n15\n16\n14\n6\n15\n16\n14\n6\n15\n16\n14\n0\n5\n"
+        return data
+    
+    def test_turn(self):
+        inputDatas = self.makeInputData("null")
+        buf = StringIO()
+        buf.write(inputDatas)
+        buf.seek(0)
+        with redirect_stdin(buf):
+            result =  main()
+        assert result == True
+        
+        
+    def setUp(self):
+        pass
+        
+    def teardown_method(self):
+        BattleSystem.BSinput = input
 
-@pytest.mark.parametrize("a, b, r", [(9, 8, 1), (7, 6, 1), (5, 4, 1), (3, 2, 1), (1, 0, 1)])
-def test_sub(calc, a, b, r):
-    assert calc.sub(a, b) == r
+if __name__ == "__main__":
+    unittest.main()
 
-@pytest.mark.parametrize("a, b, r", [(9, 8, 72), (7, 6, 42), (5, 4, 20), (3, 2, 6), (1, 0, 0)])
-def test_mul(calc, a, b, r):
-    assert calc.mul(a, b) == r
 
-@pytest.mark.parametrize("a, b, r", [(9, 3, 3), (8, 4, 2), (6, 2, 3), (4, 2, 2), (0, 1, 0)])
-def test_div(calc, a, b, r):
-    assert calc.div(a, b) == r
 
-def test_div_error(calc):
-    with pytest.raises(ZeroDivisionError):
-        calc.div(1, 0)

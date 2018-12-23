@@ -4,6 +4,7 @@ Created on Thu Dec 20 23:11:33 2018
 
 @author: 陸
 """
+import sys
 
 class card:
     def __init__(self,name,cost):
@@ -85,9 +86,7 @@ class BattleSystem:
             self.Field[PlayerID].GoToCementery(SelectFieldID)
         if self.Field[1-PlayerID].place[SelectEnemyFieldID].HP <= 0: #破壊判定処理
             self.Field[1-PlayerID].GoToCementery(SelectEnemyFieldID)
-    
-#    def PostFight(self,)#交戦後処理
-        
+            
     
     def AttackFace(self,Follower0,EnemyPlayer):
         EnemyPlayer.changeHP(-Follower0.AP)
@@ -101,12 +100,17 @@ class BattleSystem:
             return False
     def setPP(self,Field):
         Field.PP = Field.MaxPP
+        
+    def drawPhase(self,PlayerID):
+        self.Field[PlayerID].draw(1)
     
     
     def turn(self,PlayerID):
         ENDFlag = 0
         self.Field[PlayerID].MaxPP += 1
         self.setPP(self.Field[PlayerID])
+        self.drawPhase(PlayerID)
+        
         while ENDFlag == 0:
             print(str(self.Field[PlayerID].playerName) + "turn")
             SelectFieldID = int(input('カードを選択0~15>> ')) #0~4 placeのカード　5~13手札 14END 15自情報取得　16敵情報取得
@@ -144,6 +148,9 @@ class BattleSystem:
             else:
                 print("Unexpected Number.You should select from 0 to 14.")
         self.turn(1-PlayerID)
+        
+        if self.Field[PlayerID].HP <= 0:
+            return True
         
         
 class BattleDeck:
