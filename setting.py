@@ -144,7 +144,7 @@ class BattleSystem:
                     SelectEnemyFieldID = int(input('相手のカードか顔を選択0~5>> ')) #0~5 相手placeのカード　0~4手札 5顔
                     
                     if SelectEnemyFieldID <=4:#相手のPlace選択
-                        if SelectFieldID >= len(self.Field[1-PlayerID].place):print("Out of Place")#相手のPlaceにカードがあるか判定
+                        if SelectEnemyFieldID >= len(self.Field[1-PlayerID].place):print("Out of Place")#相手のPlaceにカードがあるか判定
                         else:
                             Enemy = self.Field[1-PlayerID].place[SelectEnemyFieldID]
                             print("Enemy")

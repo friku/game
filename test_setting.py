@@ -13,6 +13,7 @@ from setting import follower,field,BattleDeck,makeCard,makeDeck,BattleSystem
 from io import StringIO
 import contextlib
 from parameterized import parameterized, param
+import numpy as np
 
 class redirect_stdin(contextlib._RedirectStream):
     _stream = "stdin"
@@ -32,6 +33,13 @@ class Test(unittest.TestCase):
             data += "14\n15\n16\n14\n15\n16\n14\n15\n16\n14\n15\n16\n"
         return data
     
+    def makeInputDataRandom(self,commnet):
+        data = ""
+        for i in range(6000):
+            command = np.random.randint(0,17)
+            data += str(command) + "\n"
+        return data
+    
     def setFile(self,data):
         buf = StringIO()
         buf.write(data)
@@ -42,16 +50,15 @@ class Test(unittest.TestCase):
         global inputDatas
         inputDatas.append(self.makeInputDataHP(""))
         inputDatas.append(self.makeInputDataDeck(""))
-        print(inputDatas)
+        for i in range(10):
+            inputDatas.append(self.makeInputDataRandom(""))
+#        print(inputDatas)
         print("setup")
     
-    @parameterized.expand([param(DataID=0),param(DataID=1)])
+    @parameterized.expand([param(DataID=0),param(DataID=1),param(2),param(3),param(4),param(5),param(6),param(7),param(8),param(9),param(10)])
     def test_turn(self,DataID):
         data = inputDatas[DataID]
-        print("inputData")
-        print(data)
         buf = self.setFile(data)
-        print(buf)
         with redirect_stdin(buf):
             result =  main()
         assert result == True
