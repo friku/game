@@ -27,8 +27,9 @@ def main():
     BTSystem = BattleSystem()
     BTSystem.BattlePreparation(BTDeck,BTGDeck)
     print(BTSystem.Field[0].playerName)
-    result = BTSystem.turn(0)
-    return result
+    BTSystem.turn(0)
+    print("main result")
+    return True
     
     
     

@@ -36,10 +36,16 @@ class field:
         self.hand = []
         self.place = []
         self.PlayerID = PlayerID
-        
+    
+    def checkOutOfDeck(self):
+        if len(self.BTDeck.deck) == 0:
+            print("OutOfDeck")
+            return True
+        else: False   
         
     def draw(self,drawNum):
         for i in range(drawNum):
+            if self.checkOutOfDeck():return True
             self.hand.append(self.BTDeck.deck.pop(0))
         
     def PlayCard(self,handID):
@@ -102,15 +108,22 @@ class BattleSystem:
         Field.PP = Field.MaxPP
         
     def drawPhase(self,PlayerID):
-        self.Field[PlayerID].draw(1)
+        OutOfDeckFlag = self.Field[PlayerID].draw(1)
+        return OutOfDeckFlag
     
+    def checkError(self,PlayerID):
+        assert len(self.Field[PlayerID].hand)<=9
+        assert len(self.Field[1-PlayerID].hand)<=9
+        assert len(self.Field[PlayerID].place)<=5
+        assert len(self.Field[1-PlayerID].place)<=5
     
     def turn(self,PlayerID):
         ENDFlag = 0
         self.Field[PlayerID].TurnNum += 1
         self.Field[PlayerID].MaxPP += 1
         self.setPP(self.Field[PlayerID])
-        self.drawPhase(PlayerID)
+        OutOfDeckFlag = self.drawPhase(PlayerID)
+        if OutOfDeckFlag == True: return 
         
         while ENDFlag == 0:
             print(str(self.Field[PlayerID].playerName) + "turn")
@@ -148,10 +161,17 @@ class BattleSystem:
                 self.Field[1-PlayerID].info()
             else:
                 print("Unexpected Number.You should select from 0 to 14.")
+             
+            self.checkError(PlayerID)
+        print("PlayerHP")
+        print(self.Field[PlayerID].HP)
+        if self.Field[PlayerID].HP <= 0:
+            return 
+                
+                
         self.turn(1-PlayerID)
         
-        if self.Field[PlayerID].HP <= 0:
-            return True
+
         
         
 class BattleDeck:
