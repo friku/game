@@ -35,21 +35,32 @@ class field:
         self.BTDeck = BTDeck
         self.hand = []
         self.place = []
+        self.Extinction = []
         self.PlayerID = PlayerID
     
     def checkOutOfDeck(self):
         if len(self.BTDeck.deck) == 0:
             print("OutOfDeck")
             return True
-        else: False   
+        else: False  
+        
+    def GoToCementery(self,FieldID):
+        if FieldID <= 4:
+            self.cemetery.append(self.place.pop(FieldID))
+        elif FieldID <= 14:
+            self.cemetery.append(self.hand.pop(FieldID-5))
         
     def draw(self,drawNum):
         for i in range(drawNum):
             if self.checkOutOfDeck():return True
             self.hand.append(self.BTDeck.deck.pop(0))
+            if len(self.hand) >=10:
+                self.cemetery.append(self.hand.pop(9))
         
     def PlayCard(self,handID):
         self.place.append(self.hand.pop(handID))
+        if len(self.place) >=6:
+            self.Extinction.append(self.place.pop(5))
         
     def Marigan(self,):
         self.draw(3)
@@ -57,12 +68,6 @@ class field:
     def changeHP(self,plusHP):
         self.HP = self.HP + plusHP
         print(str(self.playerName) +"HP:" + str(self.HP))
-    
-    def GoToCementery(self,FieldID):
-        if FieldID <= 4:
-            self.cemetery.append(self.place.pop(FieldID))
-        elif FieldID <= 14:
-            self.cemetery.append(self.hand.pop(FieldID-5))
     
     def info(self,):
         print("playerName:%s,HP:%d,MaxPP:%d,PP:%d,TurnNum:%d,len(hand):%d,len(place):%d,len(cemetery):%d" %(self.playerName,self.HP,self.MaxPP,self.PP,self.TurnNum,len(self.hand),len(self.place),len(self.cemetery)))
@@ -116,11 +121,13 @@ class BattleSystem:
         assert len(self.Field[1-PlayerID].hand)<=9
         assert len(self.Field[PlayerID].place)<=5
         assert len(self.Field[1-PlayerID].place)<=5
+        assert self.Field[PlayerID].MaxPP <= 10
+        assert self.Field[1-PlayerID].MaxPP <= 10
     
     def turn(self,PlayerID):
         ENDFlag = 0
         self.Field[PlayerID].TurnNum += 1
-        self.Field[PlayerID].MaxPP += 1
+        if self.Field[PlayerID].MaxPP<=9: self.Field[PlayerID].MaxPP += 1
         self.setPP(self.Field[PlayerID])
         OutOfDeckFlag = self.drawPhase(PlayerID)
         if OutOfDeckFlag == True: return 

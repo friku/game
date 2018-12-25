@@ -29,7 +29,7 @@ class Test(unittest.TestCase):
     def makeInputDataDeck(self,commnet):
         data = "14\n14\n14\n14\n"
         for i in range(20):
-            data += "14\n14\n14\n14\n"
+            data += "14\n15\n16\n14\n15\n16\n14\n15\n16\n14\n15\n16\n"
         return data
     
     def setFile(self,data):
