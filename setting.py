@@ -137,27 +137,33 @@ class BattleSystem:
             SelectFieldID = int(input('カードを選択0~15>> ')) #0~4 placeのカード　5~13手札 14END 15自情報取得　16敵情報取得
             
             if SelectFieldID <= 4:#自分のPlace選択
-                print(self.Field[PlayerID].place[SelectFieldID].name)
-                SelectCard = self.Field[PlayerID].place[SelectFieldID]
-                SelectEnemyFieldID = int(input('相手のカードか顔を選択0~5>> ')) #0~5 相手placeのカード　0~4手札 5顔
-                
-                if SelectEnemyFieldID <=4:#相手のPlace選択
-                    Enemy = self.Field[1-PlayerID].place[SelectEnemyFieldID]
-                    print("Enemy")
-                    print(Enemy)
-                    self.fight(SelectCard,Enemy,SelectFieldID,SelectEnemyFieldID,PlayerID)#交戦
+                if SelectFieldID >= len(self.Field[PlayerID].place):print("Out of Place")#自分のPlaceにカードがあるか判定
+                else:
+                    print(self.Field[PlayerID].place[SelectFieldID].name)
+                    SelectCard = self.Field[PlayerID].place[SelectFieldID]
+                    SelectEnemyFieldID = int(input('相手のカードか顔を選択0~5>> ')) #0~5 相手placeのカード　0~4手札 5顔
                     
-                elif SelectEnemyFieldID == 5:#相手の顔選択
-                    EnemyPlayer = self.Field[1-PlayerID]
-                    self.AttackFace(SelectCard,EnemyPlayer)
+                    if SelectEnemyFieldID <=4:#相手のPlace選択
+                        if SelectFieldID >= len(self.Field[1-PlayerID].place):print("Out of Place")#相手のPlaceにカードがあるか判定
+                        else:
+                            Enemy = self.Field[1-PlayerID].place[SelectEnemyFieldID]
+                            print("Enemy")
+                            print(Enemy)
+                            self.fight(SelectCard,Enemy,SelectFieldID,SelectEnemyFieldID,PlayerID)#交戦
+                    
+                    elif SelectEnemyFieldID == 5:#相手の顔選択
+                        EnemyPlayer = self.Field[1-PlayerID]
+                        self.AttackFace(SelectCard,EnemyPlayer)
                 
                 
             elif SelectFieldID <=13:#自分の手札選択
-                SelectHandID = SelectFieldID - 5 
-                print(self.Field[PlayerID].hand[SelectHandID].name)
-                SelectCardCost = self.Field[PlayerID].hand[SelectHandID].cost
-                if self.CostCheck(self.Field[PlayerID],SelectCardCost) == True:
-                    self.Field[PlayerID].PlayCard(SelectHandID)
+                if SelectFieldID-5 >= len(self.Field[PlayerID].hand):print("Out of Hand")#自分のHandにカードがあるか判定
+                else:
+                    SelectHandID = SelectFieldID - 5 
+                    print(self.Field[PlayerID].hand[SelectHandID].name)
+                    SelectCardCost = self.Field[PlayerID].hand[SelectHandID].cost
+                    if self.CostCheck(self.Field[PlayerID],SelectCardCost) == True:
+                        self.Field[PlayerID].PlayCard(SelectHandID)
             
             elif SelectFieldID <= 14:#END
                 print(str(self.Field[PlayerID].playerName) + "END")
