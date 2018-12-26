@@ -22,7 +22,22 @@ class follower(card):
         self.HP = self.HP + plusHP
         print(str(self.name) +"HP:" + str(self.HP))
         return self.HP
-        
+    
+    def StandbyPhase(self,):
+        self.AttackFlag = 0
+
+class Amulet(card):
+    def __init__(self,name,cost,count=None):
+        card.__init__(self,name,cost)
+        self.count = count
+    
+    def changeCount(self,plusCount):
+        self.count = self.count + plusCount
+        print(str(self.name) +"count:" + str(self.count))
+        return self.count
+    
+    def StandbyPhase(self,):
+        pass        
 
 class field:
     def __init__(self,playerName,BTDeck,PlayerID):
@@ -117,9 +132,9 @@ class BattleSystem:
         OutOfDeckFlag = self.Field[PlayerID].draw(1)
         return OutOfDeckFlag
     
-    def SetAttackFlag(self,PlayerID):
+    def StanbyFaze(self,PlayerID):
         for i in range(len(self.Field[PlayerID].place)):
-            self.Field[PlayerID].place[i].AttackFlag = 0
+            self.Field[PlayerID].place[i].StandbyPhase()
     
     def checkError(self,PlayerID):
         assert len(self.Field[PlayerID].hand)<=9
@@ -132,7 +147,7 @@ class BattleSystem:
     def turn(self,PlayerID):
         ENDFlag = 0
         self.Field[PlayerID].TurnNum += 1
-        self.SetAttackFlag(PlayerID)#フォロワーの攻撃を可能にする
+        self.StanbyFaze(PlayerID)#フォロワーの攻撃を可能にする
         if self.Field[PlayerID].MaxPP<=9: self.Field[PlayerID].MaxPP += 1
         self.setPP(self.Field[PlayerID])
         OutOfDeckFlag = self.drawPhase(PlayerID)
