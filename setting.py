@@ -17,6 +17,7 @@ class follower(card):
         card.__init__(self,name,cost)
         self.AP = AP
         self.HP = HP
+        self.AttackFlag = 1
         
     def changeHP(self,plusHP):
         self.HP = self.HP + plusHP
@@ -71,13 +72,12 @@ class field:
     
     def info(self,):
         print("playerName:%s,HP:%d,MaxPP:%d,PP:%d,TurnNum:%d,len(hand):%d,len(place):%d,len(cemetery):%d" %(self.playerName,self.HP,self.MaxPP,self.PP,self.TurnNum,len(self.hand),len(self.place),len(self.cemetery)))
-        print(self.playerName,self.HP,self.MaxPP,self.PP,self.TurnNum,len(self.hand),len(self.place),len(self.cemetery))
         print("Hand info")
         for card in self.hand:
-            print(card.name,card.HP,card.AP)
+            print(card.name,card.AP,card.HP)
         print("Place info")
         for card in self.place:
-            print(card.name,card.HP,card.AP)
+            print(card.name,card.AP,card.HP)
         
         
 
@@ -116,6 +116,10 @@ class BattleSystem:
         OutOfDeckFlag = self.Field[PlayerID].draw(1)
         return OutOfDeckFlag
     
+    def SetAttackFlag(self,PlayerID):
+        for i in range(len(self.Field[PlayerID].place)):
+            self.Field[PlayerID].place[i].AttackFlag = 0
+    
     def checkError(self,PlayerID):
         assert len(self.Field[PlayerID].hand)<=9
         assert len(self.Field[1-PlayerID].hand)<=9
@@ -127,28 +131,31 @@ class BattleSystem:
     def turn(self,PlayerID):
         ENDFlag = 0
         self.Field[PlayerID].TurnNum += 1
+        self.SetAttackFlag(PlayerID)#フォロワーの攻撃を可能にする
         if self.Field[PlayerID].MaxPP<=9: self.Field[PlayerID].MaxPP += 1
         self.setPP(self.Field[PlayerID])
         OutOfDeckFlag = self.drawPhase(PlayerID)
         if OutOfDeckFlag == True: return 
         
+        
         while ENDFlag == 0:
             print(str(self.Field[PlayerID].playerName) + "turn")
             SelectFieldID = int(input('カードを選択0~15>> ')) #0~4 placeのカード　5~13手札 14END 15自情報取得　16敵情報取得
-            
+            print(str(SelectFieldID))
             if SelectFieldID <= 4:#自分のPlace選択
-                if SelectFieldID >= len(self.Field[PlayerID].place):print("Out of Place")#自分のPlaceにカードがあるか判定
+                if SelectFieldID >= len(self.Field[PlayerID].place):print(str(SelectFieldID)+"Out of Place")#自分のPlaceにカードがなかったらエラー
                 else:
                     print(self.Field[PlayerID].place[SelectFieldID].name)
                     SelectCard = self.Field[PlayerID].place[SelectFieldID]
                     SelectEnemyFieldID = int(input('相手のカードか顔を選択0~5>> ')) #0~5 相手placeのカード　0~4手札 5顔
-                    
-                    if SelectEnemyFieldID <=4:#相手のPlace選択
-                        if SelectEnemyFieldID >= len(self.Field[1-PlayerID].place):print("Out of Place")#相手のPlaceにカードがあるか判定
+                    print(str(SelectEnemyFieldID))
+                    if SelectEnemyFieldID <=5 and  self.Field[PlayerID].place[SelectFieldID].AttackFlag == 1:print(str(self.Field[PlayerID].place[SelectFieldID]) + "は攻撃済み")#攻撃済みだったらエラー
+                    elif SelectEnemyFieldID <=4:#相手のPlace選択
+                        if SelectEnemyFieldID >= len(self.Field[1-PlayerID].place):print("Out of Place")#相手のPlaceにカードがなかったらエラー
                         else:
                             Enemy = self.Field[1-PlayerID].place[SelectEnemyFieldID]
                             print("Enemy")
-                            print(Enemy)
+                            print(Enemy.name)
                             self.fight(SelectCard,Enemy,SelectFieldID,SelectEnemyFieldID,PlayerID)#交戦
                     
                     elif SelectEnemyFieldID == 5:#相手の顔選択
@@ -157,7 +164,8 @@ class BattleSystem:
                 
                 
             elif SelectFieldID <=13:#自分の手札選択
-                if SelectFieldID-5 >= len(self.Field[PlayerID].hand):print("Out of Hand")#自分のHandにカードがあるか判定
+                if SelectFieldID-5 >= len(self.Field[PlayerID].hand):print("Out of Hand")#自分のHandにカードがなかったらエラー
+                elif len(self.Field[PlayerID].place) >= 5:print("Place が埋まっています")
                 else:
                     SelectHandID = SelectFieldID - 5 
                     print(self.Field[PlayerID].hand[SelectHandID].name)
