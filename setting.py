@@ -12,11 +12,12 @@ class card:
     
 
 class follower(card):
-    def __init__(self,name,cost,AP,HP):
+    def __init__(self,name,cost,AP,HP,):
         card.__init__(self,name,cost)
         self.AP = AP
         self.HP = HP
         self.AttackFlag = 1
+        self.cardType = "follower"
         
     def changeHP(self,plusHP):
         self.HP = self.HP + plusHP
@@ -30,14 +31,23 @@ class Amulet(card):
     def __init__(self,name,cost,count=None):
         card.__init__(self,name,cost)
         self.count = count
+        self.cardType = "Amulet"
     
     def changeCount(self,plusCount):
         self.count = self.count + plusCount
         print(str(self.name) +"count:" + str(self.count))
         return self.count
     
-    def StandbyPhase(self,):
-        pass        
+    def StandbyPhase(self,):#オーバーライドして使う
+        pass    
+
+class Spell(card):
+    def __init__(self,name,cost,count=None):
+        card.__init__(self,name,cost)
+        self.cardType = "Spell"
+    
+    def PlaySpell(self,Field):#オーバーライドして使う
+        pass
 
 class field:
     def __init__(self,playerName,BTDeck,PlayerID):
@@ -76,6 +86,11 @@ class field:
         self.place.append(self.hand.pop(handID))
         if len(self.place) >=6:
             self.Extinction.append(self.place.pop(5))
+    
+    def PlaySpell(self,Spell,Field,PlayerID,handID):
+        Spell.PlaySpell(Field,PlayerID)
+        self.cemetery.append(self.hand.pop(handID))
+        
         
     def Marigan(self,):
         self.draw(3)
@@ -165,7 +180,8 @@ class BattleSystem:
                     SelectCard = self.Field[PlayerID].place[SelectFieldID]
                     SelectEnemyFieldID = int(input('相手のカードか顔を選択0~5>> ')) #0~5 相手placeのカード　0~4手札 5顔
                     print(str(SelectEnemyFieldID))
-                    if SelectEnemyFieldID <=5 and  self.Field[PlayerID].place[SelectFieldID].AttackFlag == 1:print(str(self.Field[PlayerID].place[SelectFieldID]) + "は攻撃できません")#召喚酔い・攻撃済みだったらエラー
+                    if SelectEnemyFieldID <=5 and  self.Field[PlayerID].place[SelectFieldID].AttackFlag == 1:
+                        print(str(self.Field[PlayerID].place[SelectFieldID]) + "は攻撃できません")#召喚酔い・攻撃済みだったらエラー
                     elif SelectEnemyFieldID <=4:#相手のPlace選択
                         if SelectEnemyFieldID >= len(self.Field[1-PlayerID].place):print("Out of Place")#相手のPlaceにカードがなかったらエラー
                         else:
@@ -182,10 +198,12 @@ class BattleSystem:
                 
                 
             elif SelectFieldID <=13:#自分の手札選択
-                if SelectFieldID-5 >= len(self.Field[PlayerID].hand):print("Out of Hand")#自分のHandにカードがなかったらエラー
+                SelectHandID = SelectFieldID - 5 
+                if SelectHandID >= len(self.Field[PlayerID].hand):print("Out of Hand")#自分のHandにカードがなかったらエラー
+                elif self.Field[PlayerID].hand[SelectHandID].cardType == "Spell": #スペルを選択した時
+                    self.Field[PlayerID].PlaySpell(self.Field[PlayerID].hand[SelectHandID],self.Field,PlayerID,SelectHandID)
                 elif len(self.Field[PlayerID].place) >= 5:print("Place が埋まっています")
                 else:
-                    SelectHandID = SelectFieldID - 5 
                     print(self.Field[PlayerID].hand[SelectHandID].name)
                     SelectCardCost = self.Field[PlayerID].hand[SelectHandID].cost
                     if self.CostCheck(self.Field[PlayerID],SelectCardCost) == True:
