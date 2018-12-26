@@ -200,14 +200,13 @@ class BattleSystem:
             elif SelectFieldID <=13:#自分の手札選択
                 SelectHandID = SelectFieldID - 5 
                 if SelectHandID >= len(self.Field[PlayerID].hand):print("Out of Hand")#自分のHandにカードがなかったらエラー
+                elif self.CostCheck(self.Field[PlayerID],self.Field[PlayerID].hand[SelectHandID].cost) == False:print("PPがたりません")
                 elif self.Field[PlayerID].hand[SelectHandID].cardType == "Spell": #スペルを選択した時
                     self.Field[PlayerID].PlaySpell(self.Field[PlayerID].hand[SelectHandID],self.Field,PlayerID,SelectHandID)
                 elif len(self.Field[PlayerID].place) >= 5:print("Place が埋まっています")
                 else:
                     print(self.Field[PlayerID].hand[SelectHandID].name)
-                    SelectCardCost = self.Field[PlayerID].hand[SelectHandID].cost
-                    if self.CostCheck(self.Field[PlayerID],SelectCardCost) == True:
-                        self.Field[PlayerID].PlayCard(SelectHandID)
+                    self.Field[PlayerID].PlayCard(SelectHandID)
             
             elif SelectFieldID <= 14:#END
                 print(str(self.Field[PlayerID].playerName) + "END")
