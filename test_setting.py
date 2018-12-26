@@ -5,11 +5,8 @@ Created on Mon Dec 24 00:00:06 2018
 
 @author: riku
 """
-import sys
-import pytest
 import unittest
 from main import main
-from setting import follower,field,BattleDeck,makeCard,makeDeck,BattleSystem
 from io import StringIO
 import contextlib
 from parameterized import parameterized, param

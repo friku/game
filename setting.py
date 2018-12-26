@@ -4,7 +4,6 @@ Created on Thu Dec 20 23:11:33 2018
 
 @author: 陸
 """
-import sys
 
 class card:
     def __init__(self,name,cost):
@@ -77,7 +76,7 @@ class field:
             print(card.name,card.AP,card.HP)
         print("Place info")
         for card in self.place:
-            print(card.name,card.AP,card.HP)
+            print(card.name,card.AP,card.HP,card.AttackFlag)
         
         
 
@@ -93,6 +92,7 @@ class BattleSystem:
     def fight(self,Follower0,Follower1,SelectFieldID,SelectEnemyFieldID,PlayerID):#交戦処理
         Follower0.changeHP(-Follower1.AP)
         Follower1.changeHP(-Follower0.AP)
+        Follower0.AttackFlag=1 #AttackFlagを攻撃済みに変更
         if self.Field[PlayerID].place[SelectFieldID].HP <= 0: #破壊判定処理
             self.Field[PlayerID].GoToCementery(SelectFieldID)
         if self.Field[1-PlayerID].place[SelectEnemyFieldID].HP <= 0: #破壊判定処理
@@ -101,6 +101,7 @@ class BattleSystem:
     
     def AttackFace(self,Follower0,EnemyPlayer):
         EnemyPlayer.changeHP(-Follower0.AP)
+        Follower0.AttackFlag=1 #AttackFlagを攻撃済みに変更
         
     def CostCheck(self,Field,cost):
         if  cost <= Field.PP:
@@ -149,7 +150,7 @@ class BattleSystem:
                     SelectCard = self.Field[PlayerID].place[SelectFieldID]
                     SelectEnemyFieldID = int(input('相手のカードか顔を選択0~5>> ')) #0~5 相手placeのカード　0~4手札 5顔
                     print(str(SelectEnemyFieldID))
-                    if SelectEnemyFieldID <=5 and  self.Field[PlayerID].place[SelectFieldID].AttackFlag == 1:print(str(self.Field[PlayerID].place[SelectFieldID]) + "は攻撃済み")#攻撃済みだったらエラー
+                    if SelectEnemyFieldID <=5 and  self.Field[PlayerID].place[SelectFieldID].AttackFlag == 1:print(str(self.Field[PlayerID].place[SelectFieldID]) + "は攻撃できません")#召喚酔い・攻撃済みだったらエラー
                     elif SelectEnemyFieldID <=4:#相手のPlace選択
                         if SelectEnemyFieldID >= len(self.Field[1-PlayerID].place):print("Out of Place")#相手のPlaceにカードがなかったらエラー
                         else:
@@ -161,6 +162,8 @@ class BattleSystem:
                     elif SelectEnemyFieldID == 5:#相手の顔選択
                         EnemyPlayer = self.Field[1-PlayerID]
                         self.AttackFace(SelectCard,EnemyPlayer)
+                    
+                    else: print("0~5を入力してください") #入力値がエラー
                 
                 
             elif SelectFieldID <=13:#自分の手札選択
@@ -181,7 +184,7 @@ class BattleSystem:
             elif SelectFieldID == 16:#相手の情報
                 self.Field[1-PlayerID].info()
             else:
-                print("Unexpected Number.You should select from 0 to 14.")
+                print("Unexpected Number.You should select from 0 to 16.")
              
             self.checkError(PlayerID)
             print("PlayerHP")
