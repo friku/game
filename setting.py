@@ -184,10 +184,10 @@ class BattleSystem:
                 print("Unexpected Number.You should select from 0 to 14.")
              
             self.checkError(PlayerID)
-        print("PlayerHP")
-        print(self.Field[PlayerID].HP)
-        if self.Field[PlayerID].HP <= 0:
-            return 
+            print("PlayerHP")
+            print(self.Field[PlayerID].HP,self.Field[1-PlayerID].HP)
+            if self.Field[PlayerID].HP <= 0 or self.Field[1-PlayerID].HP<=0:
+                return 
                 
                 
         self.turn(1-PlayerID)
