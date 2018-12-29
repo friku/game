@@ -75,7 +75,7 @@ class field:
     def GoToCementery(self,FieldID,Field):
         if FieldID <= 4:
             self.cemetery.append(self.place.pop(FieldID))
-            self.place[FieldID].lastWord(Field)
+            self.cemetery[-1].lastWord(Field)
         elif FieldID <= 14:
             self.cemetery.append(self.hand.pop(FieldID-5))
         
