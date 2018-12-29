@@ -10,6 +10,9 @@ class card:
         self.name = name
         self.cost = cost
     
+    def lastWord(self,Field):
+        pass
+    
 
 class follower(card):
     def __init__(self,name,cost,AP,HP,):
@@ -69,9 +72,10 @@ class field:
             return True
         else: False  
         
-    def GoToCementery(self,FieldID):
+    def GoToCementery(self,FieldID,Field):
         if FieldID <= 4:
             self.cemetery.append(self.place.pop(FieldID))
+            self.place[FieldID].lastWord(Field)
         elif FieldID <= 14:
             self.cemetery.append(self.hand.pop(FieldID-5))
         
@@ -124,9 +128,9 @@ class BattleSystem:
         Follower1.changeHP(-Follower0.AP)
         Follower0.AttackFlag=1 #AttackFlagを攻撃済みに変更
         if self.Field[PlayerID].place[SelectFieldID].HP <= 0: #破壊判定処理
-            self.Field[PlayerID].GoToCementery(SelectFieldID)
+            self.Field[PlayerID].GoToCementery(SelectFieldID,self.Field)
         if self.Field[1-PlayerID].place[SelectEnemyFieldID].HP <= 0: #破壊判定処理
-            self.Field[1-PlayerID].GoToCementery(SelectEnemyFieldID)
+            self.Field[1-PlayerID].GoToCementery(SelectEnemyFieldID,self.Field)
             
     
     def AttackFace(self,Follower0,EnemyPlayer):
