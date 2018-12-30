@@ -55,8 +55,9 @@ class field:
             self.place[-1].fanfare(Field,PlayerID)
     
     def PlaySpell(self,Spell,Field,PlayerID,handID):
-        Spell.PlaySpell(Field,PlayerID)
-        self.cemetery.append(self.hand.pop(handID))
+        UseSpellFlag = Spell.PlaySpell(Field,PlayerID)
+        if UseSpellFlag == True:
+            self.cemetery.append(self.hand.pop(handID))
         
         
     def Marigan(self,):
@@ -70,10 +71,18 @@ class field:
         print("playerName:%s,HP:%d,MaxPP:%d,PP:%d,TurnNum:%d,len(hand):%d,len(place):%d,len(cemetery):%d" %(self.playerName,self.HP,self.MaxPP,self.PP,self.TurnNum,len(self.hand),len(self.place),len(self.cemetery)))
         print("Hand info")
         for card in self.hand:
-            print(card.name,card.AP,card.HP)
+            if card.cardType == "follower":
+                print(card.name,card.AP,card.HP)
+            elif card.cardType == "Amulet":
+                print(card.name,card.count)
+            elif card.cardType == "Spell":
+                print(card.name)
         print("Place info")
         for card in self.place:
-            print(card.name,card.AP,card.HP,card.AttackFlag)
+            if card.cardType == "follower":
+                print(card.name,card.AP,card.HP,card.AttackFlag)
+            elif card.cardType == "Amulet":
+                print(card.name,card.count)
         
         
 

@@ -56,8 +56,8 @@ class Spell(card):
         card.__init__(self,name,cost)
         self.cardType = "Spell"
     
-    def PlaySpell(self,Field):#オーバーライドして使う
-        pass
+    def PlaySpell(self,Field,PlayerID):#オーバーライドして使う
+        return True
 
 class BubetuNoSinja(follower):
     def __init__(self,name="BubetuNoSinja",cost=1,AP=1,HP=1,):
@@ -77,16 +77,20 @@ class BubetuNoSinja(follower):
 
 class BubetuNoEnsou(Spell):
     def __init__(self,name="BubetuNoEnsou",cost=1):
-        super().__init__(self,name,cost)
+        super().__init__(name,cost)
         self.cardType = "Spell"
         
     def PlaySpell(self,Field,PlayerID):
+        if len(Field[PlayerID].place) == 0: return False
+        if len(Field[1-PlayerID].place) == 0: return False
+        
         SelectFieldID = selectMyPlace(Field,PlayerID,fanfareFlag=0)
-        SelectEnemyFieldID = selectEnemyPlace(Field,PlayerID,fanfareFlag=0)
+        SelectEnemyFieldID = selectEnemyPlace(Field,PlayerID)
         Field[PlayerID].place[SelectFieldID].changeHP(-1)
         Field[PlayerID].checkDestroy(SelectFieldID,Field)
-        Field[1-PlayerID].place[SelectEnemyFieldID].changeHP(-1)
+        Field[1-PlayerID].place[SelectEnemyFieldID].changeHP(-3)
         Field[1-PlayerID].checkDestroy(SelectEnemyFieldID,Field)
+        return True
         
         
 

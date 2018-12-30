@@ -6,7 +6,7 @@ Created on Thu Dec 20 23:55:18 2018
 """
 
 from setting import field,BattleSystem
-from makecard import card,follower,Amulet,Spell,BubetuNoSinja,makeCard,makeDeck,BattleDeck
+from makecard import card,follower,Amulet,Spell,BubetuNoSinja,makeCard,makeDeck,BattleDeck,BubetuNoEnsou
 
 def main():
     cardMaker = makeCard()
@@ -15,7 +15,8 @@ def main():
         Faiters.append(cardMaker.makeFollower(name="Faiter"+str(i),cost=2,AP=2,HP=2))
      
     ghosts = []
-    for i in range(40):
+    for i in range(20):
+        ghosts.append(BubetuNoEnsou())
         ghosts.append(BubetuNoSinja())
 #        ghosts.append(cardMaker.makeFollower(name="ghost"+str(i),cost=1,AP=1,HP=1))
     
