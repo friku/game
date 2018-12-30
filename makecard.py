@@ -5,7 +5,7 @@ Created on Sun Dec 30 02:45:08 2018
 
 @author: riku
 """
-
+from Utils import selectMyPlace
 
 class card:
     def __init__(self,name,cost):
@@ -52,7 +52,7 @@ class Amulet(card):
         pass    
 
 class Spell(card):
-    def __init__(self,name,cost,count=None):
+    def __init__(self,name,cost):
         card.__init__(self,name,cost)
         self.cardType = "Spell"
     
@@ -69,16 +69,24 @@ class BubetuNoSinja(follower):
         
     def fanfare(self,Field,PlayerID):
         print("fanfare:"+str(self.name))
-        if len(Field[PlayerID].place)>=1:
-            SelectFieldID = int(input('カードを選択0~4>> ')) #0~4 placeのカード　5~13手札 14END 15自情報取得　16敵情報取得
-            if SelectFieldID >= len(Field[PlayerID].place):print("error")
-            else:
-                Field[PlayerID].place[SelectFieldID].changeHP(-1)
-                Field[PlayerID].checkDestroy(SelectFieldID,Field)
-                Field[PlayerID].draw(1)
-      
+        if len(Field[PlayerID].place)>=2:
+            SelectFieldID = selectMyPlace(Field,PlayerID,fanfareFlag=1)
+            Field[PlayerID].place[SelectFieldID].changeHP(-1)
+            Field[PlayerID].checkDestroy(SelectFieldID,Field)
+            Field[PlayerID].draw(1)
+
+class BubetuNoEnsou(Spell):
+    def __init__(self,name="BubetuNoEnsou",cost=1):
+        super().__init__(self,name,cost)
+        self.cardType = "Spell"
         
-  #戦闘準備用
+    def PlaySpell(self,Field,PlayerID):
+        pass
+        
+
+        
+        
+        #戦闘準備用
 class BattleDeck:
     deck = []
     def __init__(self,deck):
