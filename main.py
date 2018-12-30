@@ -5,7 +5,8 @@ Created on Thu Dec 20 23:55:18 2018
 @author: 陸
 """
 
-from setting import follower,field,BattleDeck,makeCard,makeDeck,BattleSystem
+from setting import field,BattleSystem
+from makecard import card,follower,Amulet,Spell,BubetuNoSinja,makeCard,makeDeck,BattleDeck
 
 def main():
     cardMaker = makeCard()
@@ -15,7 +16,8 @@ def main():
      
     ghosts = []
     for i in range(40):
-        ghosts.append(cardMaker.makeFollower(name="ghost"+str(i),cost=1,AP=1,HP=1))
+        ghosts.append(BubetuNoSinja())
+#        ghosts.append(cardMaker.makeFollower(name="ghost"+str(i),cost=1,AP=1,HP=1))
     
     BTDeck = BattleDeck(Faiters)
     BTGDeck = BattleDeck(ghosts)

@@ -5,52 +5,9 @@ Created on Thu Dec 20 23:11:33 2018
 @author: 陸
 """
 
-class card:
-    def __init__(self,name,cost):
-        self.name = name
-        self.cost = cost
-    
-    def lastWord(self,Field):
-        pass
-    
+from makecard import follower
 
-class follower(card):
-    def __init__(self,name,cost,AP,HP,):
-        card.__init__(self,name,cost)
-        self.AP = AP
-        self.HP = HP
-        self.AttackFlag = 1
-        self.cardType = "follower"
-        
-    def changeHP(self,plusHP):
-        self.HP = self.HP + plusHP
-        print(str(self.name) +"HP:" + str(self.HP))
-        return self.HP
-    
-    def StandbyPhase(self,):
-        self.AttackFlag = 0
 
-class Amulet(card):
-    def __init__(self,name,cost,count=None):
-        card.__init__(self,name,cost)
-        self.count = count
-        self.cardType = "Amulet"
-    
-    def changeCount(self,plusCount):
-        self.count = self.count + plusCount
-        print(str(self.name) +"count:" + str(self.count))
-        return self.count
-    
-    def StandbyPhase(self,):#オーバーライドして使う
-        pass    
-
-class Spell(card):
-    def __init__(self,name,cost,count=None):
-        card.__init__(self,name,cost)
-        self.cardType = "Spell"
-    
-    def PlaySpell(self,Field):#オーバーライドして使う
-        pass
 
 class field:
     def __init__(self,playerName,BTDeck,PlayerID):
@@ -78,6 +35,10 @@ class field:
             self.cemetery[-1].lastWord(Field)
         elif FieldID <= 14:
             self.cemetery.append(self.hand.pop(FieldID-5))
+    
+    def checkDestroy(self,FieldID,Field):
+        if self.place[FieldID].HP <= 0:
+            self.GoToCementery(FieldID,Field)
         
     def draw(self,drawNum):
         for i in range(drawNum):
@@ -86,10 +47,12 @@ class field:
             if len(self.hand) >=10:
                 self.cemetery.append(self.hand.pop(9))
         
-    def PlayCard(self,handID):
+    def PlayCard(self,handID,Field,PlayerID):
         self.place.append(self.hand.pop(handID))
         if len(self.place) >=6:
             self.Extinction.append(self.place.pop(5))
+        else:
+            self.place[-1].fanfare(Field,PlayerID)
     
     def PlaySpell(self,Spell,Field,PlayerID,handID):
         Spell.PlaySpell(Field,PlayerID)
@@ -142,7 +105,7 @@ class BattleSystem:
             Field.PP -=cost
             return True
         else:
-            print("コストが足りません")
+            print("コストが足りません error")
             return False
     def setPP(self,Field):
         Field.PP = Field.MaxPP
@@ -175,19 +138,19 @@ class BattleSystem:
         
         while ENDFlag == 0:
             print(str(self.Field[PlayerID].playerName) + "turn")
-            SelectFieldID = int(input('カードを選択0~15>> ')) #0~4 placeのカード　5~13手札 14END 15自情報取得　16敵情報取得
+            SelectFieldID = int(input('カードを選択0~16>> ')) #0~4 placeのカード　5~13手札 14END 15自情報取得　16敵情報取得
             print(str(SelectFieldID))
             if SelectFieldID <= 4:#自分のPlace選択
-                if SelectFieldID >= len(self.Field[PlayerID].place):print(str(SelectFieldID)+"Out of Place")#自分のPlaceにカードがなかったらエラー
+                if SelectFieldID >= len(self.Field[PlayerID].place):print(str(SelectFieldID)+"Out of Place error")#自分のPlaceにカードがなかったらエラー
                 else:
                     print(self.Field[PlayerID].place[SelectFieldID].name)
                     SelectCard = self.Field[PlayerID].place[SelectFieldID]
                     SelectEnemyFieldID = int(input('相手のカードか顔を選択0~5>> ')) #0~5 相手placeのカード　0~4手札 5顔
                     print(str(SelectEnemyFieldID))
                     if SelectEnemyFieldID <=5 and  self.Field[PlayerID].place[SelectFieldID].AttackFlag == 1:
-                        print(str(self.Field[PlayerID].place[SelectFieldID]) + "は攻撃できません")#召喚酔い・攻撃済みだったらエラー
+                        print(str(self.Field[PlayerID].place[SelectFieldID]) + "は攻撃できません error")#召喚酔い・攻撃済みだったらエラー
                     elif SelectEnemyFieldID <=4:#相手のPlace選択
-                        if SelectEnemyFieldID >= len(self.Field[1-PlayerID].place):print("Out of Place")#相手のPlaceにカードがなかったらエラー
+                        if SelectEnemyFieldID >= len(self.Field[1-PlayerID].place):print("Out of Place error")#相手のPlaceにカードがなかったらエラー
                         else:
                             Enemy = self.Field[1-PlayerID].place[SelectEnemyFieldID]
                             print("Enemy")
@@ -203,14 +166,14 @@ class BattleSystem:
                 
             elif SelectFieldID <=13:#自分の手札選択
                 SelectHandID = SelectFieldID - 5 
-                if SelectHandID >= len(self.Field[PlayerID].hand):print("Out of Hand")#自分のHandにカードがなかったらエラー
-                elif self.CostCheck(self.Field[PlayerID],self.Field[PlayerID].hand[SelectHandID].cost) == False:print("PPがたりません")
+                if SelectHandID >= len(self.Field[PlayerID].hand):print("Out of Hand error")#自分のHandにカードがなかったらエラー
+                elif self.CostCheck(self.Field[PlayerID],self.Field[PlayerID].hand[SelectHandID].cost) == False:print("PPがたりません error")
                 elif self.Field[PlayerID].hand[SelectHandID].cardType == "Spell": #スペルを選択した時
                     self.Field[PlayerID].PlaySpell(self.Field[PlayerID].hand[SelectHandID],self.Field,PlayerID,SelectHandID)
-                elif len(self.Field[PlayerID].place) >= 5:print("Place が埋まっています")
+                elif len(self.Field[PlayerID].place) >= 5:print("Place が埋まっています error")
                 else:
                     print(self.Field[PlayerID].hand[SelectHandID].name)
-                    self.Field[PlayerID].PlayCard(SelectHandID)
+                    self.Field[PlayerID].PlayCard(SelectHandID,self.Field,PlayerID)
             
             elif SelectFieldID <= 14:#END
                 print(str(self.Field[PlayerID].playerName) + "END")
@@ -220,7 +183,7 @@ class BattleSystem:
             elif SelectFieldID == 16:#相手の情報
                 self.Field[1-PlayerID].info()
             else:
-                print("Unexpected Number.You should select from 0 to 16.")
+                print("Unexpected Number.You should select from 0 to 16. error")
              
             self.checkError(PlayerID)
             print("PlayerHP")
@@ -234,27 +197,10 @@ class BattleSystem:
 
         
         
-class BattleDeck:
-    deck = []
-    def __init__(self,deck):
-        self.deck = deck
-        
-    def addCardToDeck(self,card):
-        self.deck.append(card)
+
     
         
-#戦闘準備用
-class makeCard:
-    def makeFollower(self,name,cost,AP,HP):
-        card = follower(name,cost,AP,HP)
-        return card
-        
-class makeDeck:
-    def makeDeck(self,cards):
-        deck = []
-        for i in range(40):
-            deck.append(card)
-        return deck
+
         
             
         
