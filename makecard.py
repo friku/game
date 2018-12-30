@@ -5,7 +5,7 @@ Created on Sun Dec 30 02:45:08 2018
 
 @author: riku
 """
-from Utils import selectMyPlace
+from Utils import selectMyPlace,selectEnemyPlace
 
 class card:
     def __init__(self,name,cost):
@@ -81,7 +81,13 @@ class BubetuNoEnsou(Spell):
         self.cardType = "Spell"
         
     def PlaySpell(self,Field,PlayerID):
-        pass
+        SelectFieldID = selectMyPlace(Field,PlayerID,fanfareFlag=0)
+        SelectEnemyFieldID = selectEnemyPlace(Field,PlayerID,fanfareFlag=0)
+        Field[PlayerID].place[SelectFieldID].changeHP(-1)
+        Field[PlayerID].checkDestroy(SelectFieldID,Field)
+        Field[1-PlayerID].place[SelectEnemyFieldID].changeHP(-1)
+        Field[1-PlayerID].checkDestroy(SelectEnemyFieldID,Field)
+        
         
 
         
