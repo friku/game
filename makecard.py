@@ -28,6 +28,8 @@ class follower(card):
         self.HP = HP
         self.EAP = EAP
         self.EHP = EHP
+        self.MaxAP = AP
+        self.MaxHP = HP
         self.AttackFlag = 1
         self.EvolveFlag = 0
         self.cardType = "follower"
@@ -110,6 +112,22 @@ class Aira(follower):
         evolveChangeStatus(self)
         if Field[PlayerID].MaxPP <= 9:
             Field[PlayerID].MaxPP +=1
+
+class WhitefrostWhisper(Spell):
+    def __init__(self,name="WhitefrostWhisper",cost=2):
+        super().__init__(name,cost)
+        self.cardType = "Spell"
+        
+    def PlaySpell(self,Field,PlayerID):
+        if len(Field[1-PlayerID].place) == 0: return False
+        
+        SelectEnemyFieldID = selectEnemyPlace(Field,PlayerID)
+        if Field[1-PlayerID].place[SelectEnemyFieldID].HP < Field[1-PlayerID].place[SelectEnemyFieldID].MaxHP:
+            Field[1-PlayerID].GoToCementery(SelectEnemyFieldID,Field)
+        else:
+            Field[1-PlayerID].place[SelectEnemyFieldID].changeHP(-1)
+            Field[1-PlayerID].checkDestroy(SelectEnemyFieldID,Field)
+        return True
  
 class Filene(follower):
     def __init__(self,name="Filene",cost=2,AP=1,HP=3):
@@ -123,11 +141,9 @@ class Filene(follower):
         
     def fanfare(self,Field,PlayerID):
         print("fanfare:"+str(self.name))
-        if len(Field[PlayerID].place)>=2:
-            SelectFieldID = selectMyPlace(Field,PlayerID,fanfareFlag=1)
-            Field[PlayerID].place[SelectFieldID].changeHP(-1)
-            Field[PlayerID].checkDestroy(SelectFieldID,Field)
-            Field[PlayerID].draw(1)       
+        if len(Field[PlayerID].hand) <=8:
+            Field[PlayerID].hand.append(WhitefrostWhisper())
+     
 
     def evolution(self,Field,PlayerID):
         evolveChangeStatus(self)

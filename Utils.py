@@ -29,3 +29,5 @@ def selectEnemyPlace(Field,PlayerID):
 def evolveChangeStatus(ThisFollower):
     ThisFollower.AP +=ThisFollower.EAP
     ThisFollower.HP +=ThisFollower.EHP
+    ThisFollower.MaxAP +=ThisFollower.EAP
+    ThisFollower.MaxHP +=ThisFollower.EHP
