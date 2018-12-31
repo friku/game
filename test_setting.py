@@ -20,7 +20,7 @@ class Test(unittest.TestCase):
     
     def makeInputDataHP(self,commnet):
         data = "14\n14\n14\n14\n"
-        for i in range(20):
+        for i in range(200):
             data += "6\n15\n16\n14\n6\n15\n16\n14\n0\n5\n14\n6\n15\n16\n0\n5\n1\n5\n14\n"
         return data
     
@@ -32,7 +32,7 @@ class Test(unittest.TestCase):
     
     def makeInputDataRandom(self,commnet):
         data = ""
-        for i in range(6000):
+        for i in range(10000):
             command = np.random.randint(0,17)
             data += str(command) + "\n"
         return data
@@ -52,7 +52,7 @@ class Test(unittest.TestCase):
 #        print(inputDatas)
         print("setup")
     
-    @parameterized.expand([param(DataID=0),param(DataID=1),param(2),param(3),param(4),param(5),param(6),param(7),param(8),param(9),param(10)])
+    @parameterized.expand([param(DataID=0),param(DataID=1),param(DataID=2),param(DataID=3),param(DataID=4),param(DataID=5),param(DataID=6),param(DataID=7),param(DataID=8),param(DataID=9)])
     def test_turn(self,DataID):
         data = inputDatas[DataID]
         buf = self.setFile(data)

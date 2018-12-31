@@ -22,11 +22,14 @@ class card:
     
 
 class follower(card):
-    def __init__(self,name,cost,AP,HP,):
+    def __init__(self,name,cost,AP,HP,EAP=2,EHP=2):
         card.__init__(self,name,cost)
         self.AP = AP
         self.HP = HP
+        self.EAP = EAP
+        self.EHP = EHP
         self.AttackFlag = 1
+        self.EvolveFlag = 0
         self.cardType = "follower"
         
     def changeHP(self,plusHP):
@@ -36,6 +39,10 @@ class follower(card):
     
     def StandbyPhase(self,):
         self.AttackFlag = 0
+    
+    def evolution(self,Field,PlayerID):
+        self.AP +=self.EAP
+        self.HP +=self.EHP
         
 class Amulet(card):
     def __init__(self,name,cost,count=None):
@@ -92,8 +99,26 @@ class BubetuNoEnsou(Spell):
         Field[1-PlayerID].checkDestroy(SelectEnemyFieldID,Field)
         return True
         
+class Aira(follower):
+    def __init__(self,name="Aira",cost=2,AP=2,HP=2,):
+        follower.__init__(self,name,cost,AP,HP)
+        self.AP = AP
+        self.HP = HP
+        self.AttackFlag = 1
+        self.cardType = "follower"
         
+    def fanfare(self,Field,PlayerID):
+        print("fanfare:"+str(self.name))
+        if len(Field[PlayerID].place)>=2:
+            SelectFieldID = selectMyPlace(Field,PlayerID,fanfareFlag=1)
+            Field[PlayerID].place[SelectFieldID].changeHP(-1)
+            Field[PlayerID].checkDestroy(SelectFieldID,Field)
+            Field[PlayerID].draw(1)       
 
+    def evolution(self,Field,PlayerID):
+        self.AP +=self.EAP
+        self.HP +=self.EHP
+        Field[PlayerID].MaxPP +=1
         
         
         #戦闘準備用

@@ -10,9 +10,10 @@ from makecard import follower
 
 
 class field:
-    def __init__(self,playerName,BTDeck,PlayerID):
+    def __init__(self,playerName,BTDeck,PlayerID,EP):
         self.HP = 20
         self.PP = 0
+        self.EP = EP
         self.MaxPP = 0
         self.TurnNum = 0
         self.cemetery = []
@@ -68,7 +69,7 @@ class field:
         print(str(self.playerName) +"HP:" + str(self.HP))
     
     def info(self,):
-        print("playerName:%s,HP:%d,MaxPP:%d,PP:%d,TurnNum:%d,len(hand):%d,len(place):%d,len(cemetery):%d" %(self.playerName,self.HP,self.MaxPP,self.PP,self.TurnNum,len(self.hand),len(self.place),len(self.cemetery)))
+        print("playerName:%s,HP:%d,MaxPP:%d,PP:%d,EP:%d,TurnNum:%d,len(hand):%d,len(place):%d,len(cemetery):%d" %(self.playerName,self.HP,self.MaxPP,self.PP,self.EP,self.TurnNum,len(self.hand),len(self.place),len(self.cemetery)))
         print("Hand info")
         for card in self.hand:
             if card.cardType == "follower":
@@ -89,8 +90,8 @@ class field:
 class BattleSystem:
     def BattlePreparation(self,BTDeck0,BTDeck1):
         self.Field = []
-        self.Field.append(field("player0",BTDeck0,0))
-        self.Field.append(field("player1",BTDeck1,1))
+        self.Field.append(field("player0",BTDeck0,0,2))
+        self.Field.append(field("player1",BTDeck1,1,3))
         self.Field[0].Marigan()
         self.Field[1].Marigan()
     
@@ -137,6 +138,7 @@ class BattleSystem:
     
     def turn(self,PlayerID):
         ENDFlag = 0
+        EvolveFlag = 0
         self.Field[PlayerID].TurnNum += 1
         self.StanbyFaze(PlayerID)#フォロワーの攻撃を可能にする
         if self.Field[PlayerID].MaxPP<=9: self.Field[PlayerID].MaxPP += 1
@@ -154,9 +156,14 @@ class BattleSystem:
                 else:
                     print(self.Field[PlayerID].place[SelectFieldID].name)
                     SelectCard = self.Field[PlayerID].place[SelectFieldID]
-                    SelectEnemyFieldID = int(input('相手のカードか顔を選択0~5>> ')) #0~5 相手placeのカード　0~4手札 5顔
+                    SelectEnemyFieldID = int(input('相手のカードか顔を選択0~6>> ')) #0~6 相手placeのカード　0~4手札 5顔 6進化
                     print(str(SelectEnemyFieldID))
-                    if SelectEnemyFieldID <=5 and  self.Field[PlayerID].place[SelectFieldID].AttackFlag == 1:
+                    if SelectEnemyFieldID == 6 and self.Field[PlayerID].place[SelectFieldID].cardType =="follower" and EvolveFlag == 0 and self.Field[PlayerID].place[SelectFieldID].EvolveFlag == 0 and self.Field[PlayerID].EP >=1 and ((self.Field[PlayerID].TurnNum>=5 and PlayerID==0)or(self.Field[PlayerID].TurnNum>=4 and PlayerID==1)):
+                        self.Field[PlayerID].place[SelectFieldID].evolution(self.Field,PlayerID)
+                        self.Field[PlayerID].EP -=1
+                        EvolveFlag = 1
+                        self.Field[PlayerID].place[SelectFieldID].EvolveFlag = 1
+                    elif SelectEnemyFieldID <=5 and  self.Field[PlayerID].place[SelectFieldID].AttackFlag == 1:
                         print(str(self.Field[PlayerID].place[SelectFieldID]) + "は攻撃できません error")#召喚酔い・攻撃済みだったらエラー
                     elif SelectEnemyFieldID <=4:#相手のPlace選択
                         if SelectEnemyFieldID >= len(self.Field[1-PlayerID].place):print("Out of Place error")#相手のPlaceにカードがなかったらエラー
@@ -170,7 +177,7 @@ class BattleSystem:
                         EnemyPlayer = self.Field[1-PlayerID]
                         self.AttackFace(SelectCard,EnemyPlayer)
                     
-                    else: print("0~5を入力してください") #入力値がエラー
+                    else: print("0~6の適切な値を入力してください") #入力値がエラー
                 
                 
             elif SelectFieldID <=13:#自分の手札選択
