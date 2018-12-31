@@ -106,14 +106,6 @@ class Aira(follower):
         self.HP = HP
         self.AttackFlag = 1
         self.cardType = "follower"
-        
-    def fanfare(self,Field,PlayerID):
-        print("fanfare:"+str(self.name))
-        if len(Field[PlayerID].place)>=2:
-            SelectFieldID = selectMyPlace(Field,PlayerID,fanfareFlag=1)
-            Field[PlayerID].place[SelectFieldID].changeHP(-1)
-            Field[PlayerID].checkDestroy(SelectFieldID,Field)
-            Field[PlayerID].draw(1)       
 
     def evolution(self,Field,PlayerID):
         self.AP +=self.EAP
