@@ -5,7 +5,7 @@ Created on Sun Dec 30 02:45:08 2018
 
 @author: riku
 """
-from Utils import selectMyPlace,selectEnemyPlace
+from Utils import selectMyPlace,selectEnemyPlace,evolveChangeStatus
 
 class card:
     def __init__(self,name,cost):
@@ -41,8 +41,7 @@ class follower(card):
         self.AttackFlag = 0
     
     def evolution(self,Field,PlayerID):
-        self.AP +=self.EAP
-        self.HP +=self.EHP
+        evolveChangeStatus(self)
         
 class Amulet(card):
     def __init__(self,name,cost,count=None):
@@ -106,12 +105,32 @@ class Aira(follower):
         self.HP = HP
         self.AttackFlag = 1
         self.cardType = "follower"
+        
+    def evolution(self,Field,PlayerID):
+        evolveChangeStatus(self)
+        if Field[PlayerID].MaxPP <= 9:
+            Field[PlayerID].MaxPP +=1
+ 
+class Filene(follower):
+    def __init__(self,name="Filene",cost=2,AP=1,HP=3):
+        follower.__init__(self,name,cost,AP,HP)
+        self.AP = AP
+        self.HP = HP
+        self.EAP = 1
+        self.EHP = 1
+        self.AttackFlag = 1
+        self.cardType = "follower"
+        
+    def fanfare(self,Field,PlayerID):
+        print("fanfare:"+str(self.name))
+        if len(Field[PlayerID].place)>=2:
+            SelectFieldID = selectMyPlace(Field,PlayerID,fanfareFlag=1)
+            Field[PlayerID].place[SelectFieldID].changeHP(-1)
+            Field[PlayerID].checkDestroy(SelectFieldID,Field)
+            Field[PlayerID].draw(1)       
 
     def evolution(self,Field,PlayerID):
-        self.AP +=self.EAP
-        self.HP +=self.EHP
-        Field[PlayerID].MaxPP +=1
-        
+        evolveChangeStatus(self)
         
         #戦闘準備用
 class BattleDeck:

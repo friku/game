@@ -25,3 +25,7 @@ def selectEnemyPlace(Field,PlayerID):
             selectFlag = 0
         else:
             return SelectEnemyFieldID
+        
+def evolveChangeStatus(ThisFollower):
+    ThisFollower.AP +=ThisFollower.EAP
+    ThisFollower.HP +=ThisFollower.EHP
