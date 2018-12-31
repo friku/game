@@ -131,6 +131,12 @@ class Filene(follower):
 
     def evolution(self,Field,PlayerID):
         evolveChangeStatus(self)
+        if len(Field[1-PlayerID].place) == 0: return False
+        SelectEnemyFieldID = selectEnemyPlace(Field,PlayerID)
+        Field[1-PlayerID].place[SelectEnemyFieldID].changeHP(-1)
+        Field[1-PlayerID].checkDestroy(SelectEnemyFieldID,Field)
+        return True
+        
         
         #戦闘準備用
 class BattleDeck:
