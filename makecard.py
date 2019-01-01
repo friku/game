@@ -169,6 +169,17 @@ class ServantOfDisdain(follower):
             Field[PlayerID].draw(1)
         return self.HP
 
+class DragonOracle(Spell):
+    def __init__(self,name="DragonOracle",cost=2):
+        super().__init__(name,cost)
+        self.cardType = "Spell"
+        
+    def PlaySpell(self,Field,PlayerID):
+        if Field[PlayerID].MaxPP >= 7:
+            Field[PlayerID].draw(1)
+        if Field[PlayerID].MaxPP <= 9:
+            Field[PlayerID].MaxPP +=1
+        return True
         
         
         #戦闘準備用

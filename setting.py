@@ -185,6 +185,7 @@ class BattleSystem:
                 if SelectHandID >= len(self.Field[PlayerID].hand):print("Out of Hand error")#自分のHandにカードがなかったらエラー
                 elif self.CostCheck(self.Field[PlayerID],self.Field[PlayerID].hand[SelectHandID].cost) == False:print("PPがたりません error")
                 elif self.Field[PlayerID].hand[SelectHandID].cardType == "Spell": #スペルを選択した時
+                    print(self.Field[PlayerID].hand[SelectHandID].name)
                     self.Field[PlayerID].PlaySpell(self.Field[PlayerID].hand[SelectHandID],self.Field,PlayerID,SelectHandID)
                 elif len(self.Field[PlayerID].place) >= 5:print("Place が埋まっています error")
                 else:

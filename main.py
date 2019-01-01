@@ -6,15 +6,17 @@ Created on Thu Dec 20 23:55:18 2018
 """
 
 from setting import field,BattleSystem
-from makecard import card,follower,Amulet,Spell,BubetuNoSinja,makeCard,makeDeck,BattleDeck,BubetuNoEnsou,Aira,Filene,ServantOfDisdain
+from makecard import card,follower,Amulet,Spell,BubetuNoSinja,makeCard,makeDeck,BattleDeck,BubetuNoEnsou,Aira,Filene,ServantOfDisdain,DragonOracle
 
 def main():
     cardMaker = makeCard()
     Faiters = []
     for i in range(20):
+        Faiters.append(DragonOracle())
         Faiters.append(cardMaker.makeFollower(name="Faiter"+str(i),cost=2,AP=2,HP=2))
         Faiters.append(Filene())
         Faiters.append(BubetuNoSinja())
+        
      
     ghosts = []
     for i in range(20):
