@@ -180,7 +180,22 @@ class DragonOracle(Spell):
         if Field[PlayerID].MaxPP <= 9:
             Field[PlayerID].MaxPP +=1
         return True
-        
+
+class VileVioletDragon(follower):
+    def __init__(self,name="VileVioletDragon",cost=5,AP=4,HP=4):
+        follower.__init__(self,name,cost,AP,HP)
+        self.AP = AP
+        self.HP = HP
+        self.AttackFlag = 1
+        self.cardType = "follower"
+    
+    def changeHP(self,plusHP,Field,PlayerID):
+        self.HP = self.HP + plusHP
+        print(str(self.name) +"_HP:" + str(self.HP))
+        print(self.HP,plusHP)
+        if self.HP >=1 and plusHP <=0:
+            Field[PlayerID].draw(2)
+        return self.HP      
         
         #戦闘準備用
 class BattleDeck:
