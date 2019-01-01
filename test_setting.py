@@ -26,13 +26,13 @@ class Test(unittest.TestCase):
     
     def makeInputDataDeck(self,commnet):
         data = "14\n14\n14\n14\n"
-        for i in range(20):
+        for i in range(200):
             data += "14\n15\n16\n14\n15\n16\n14\n15\n16\n14\n15\n16\n"
         return data
     
     def makeInputDataRandom(self,commnet):
         data = ""
-        for i in range(10000):
+        for i in range(20000):
             command = np.random.randint(0,17)
             data += str(command) + "\n"
         return data
@@ -52,6 +52,7 @@ class Test(unittest.TestCase):
 #        print(inputDatas)
         print("setup")
     
+#    @parameterized.expand([param(DataID=0),param(DataID=1)])
     @parameterized.expand([param(DataID=0),param(DataID=1),param(DataID=2),param(DataID=3),param(DataID=4),param(DataID=5),param(DataID=6),param(DataID=7),param(DataID=8),param(DataID=9)])
     def test_turn(self,DataID):
         data = inputDatas[DataID]

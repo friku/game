@@ -8,7 +8,7 @@ Created on Sun Dec 30 02:45:08 2018
 from Utils import selectMyPlace,selectEnemyPlace,evolveChangeStatus
 
 class card:
-    def __init__(self,name,cost):
+    def __init__(self,name,cost,):
         self.name = name
         self.cost = cost
     
@@ -34,7 +34,7 @@ class follower(card):
         self.EvolveFlag = 0
         self.cardType = "follower"
         
-    def changeHP(self,plusHP):
+    def changeHP(self,plusHP,Field,PlayerID):
         self.HP = self.HP + plusHP
         print(str(self.name) +"HP:" + str(self.HP))
         return self.HP
@@ -79,7 +79,7 @@ class BubetuNoSinja(follower):
         print("fanfare:"+str(self.name))
         if len(Field[PlayerID].place)>=2:
             SelectFieldID = selectMyPlace(Field,PlayerID,fanfareFlag=1)
-            Field[PlayerID].place[SelectFieldID].changeHP(-1)
+            Field[PlayerID].place[SelectFieldID].changeHP(-1,Field,PlayerID)
             Field[PlayerID].checkDestroy(SelectFieldID,Field)
             Field[PlayerID].draw(1)
 
@@ -94,9 +94,9 @@ class BubetuNoEnsou(Spell):
         
         SelectFieldID = selectMyPlace(Field,PlayerID,fanfareFlag=0)
         SelectEnemyFieldID = selectEnemyPlace(Field,PlayerID)
-        Field[PlayerID].place[SelectFieldID].changeHP(-1)
+        Field[PlayerID].place[SelectFieldID].changeHP(-1,Field,PlayerID)
         Field[PlayerID].checkDestroy(SelectFieldID,Field)
-        Field[1-PlayerID].place[SelectEnemyFieldID].changeHP(-3)
+        Field[1-PlayerID].place[SelectEnemyFieldID].changeHP(-3,Field,PlayerID)
         Field[1-PlayerID].checkDestroy(SelectEnemyFieldID,Field)
         return True
         
@@ -125,7 +125,7 @@ class WhitefrostWhisper(Spell):
         if Field[1-PlayerID].place[SelectEnemyFieldID].HP < Field[1-PlayerID].place[SelectEnemyFieldID].MaxHP:
             Field[1-PlayerID].GoToCementery(SelectEnemyFieldID,Field)
         else:
-            Field[1-PlayerID].place[SelectEnemyFieldID].changeHP(-1)
+            Field[1-PlayerID].place[SelectEnemyFieldID].changeHP(-1,Field,PlayerID)
             Field[1-PlayerID].checkDestroy(SelectEnemyFieldID,Field)
         return True
  
@@ -149,9 +149,26 @@ class Filene(follower):
         evolveChangeStatus(self)
         if len(Field[1-PlayerID].place) == 0: return False
         SelectEnemyFieldID = selectEnemyPlace(Field,PlayerID)
-        Field[1-PlayerID].place[SelectEnemyFieldID].changeHP(-1)
+        Field[1-PlayerID].place[SelectEnemyFieldID].changeHP(-1,Field,PlayerID)
         Field[1-PlayerID].checkDestroy(SelectEnemyFieldID,Field)
         return True
+    
+class ServantOfDisdain(follower):
+    def __init__(self,name="ServantOfDisdain",cost=2,AP=2,HP=2):
+        follower.__init__(self,name,cost,AP,HP)
+        self.AP = AP
+        self.HP = HP
+        self.AttackFlag = 1
+        self.cardType = "follower"
+    
+    def changeHP(self,plusHP,Field,PlayerID):
+        self.HP = self.HP + plusHP
+        print(str(self.name) +"_HP:" + str(self.HP))
+        print(self.HP,plusHP)
+        if self.HP >=1 and plusHP <=0:
+            Field[PlayerID].draw(1)
+        return self.HP
+
         
         
         #戦闘準備用

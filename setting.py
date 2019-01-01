@@ -97,8 +97,8 @@ class BattleSystem:
     
     
     def fight(self,Follower0,Follower1,SelectFieldID,SelectEnemyFieldID,PlayerID):#交戦処理
-        Follower0.changeHP(-Follower1.AP)
-        Follower1.changeHP(-Follower0.AP)
+        Follower0.changeHP(-Follower1.AP,self.Field,PlayerID)
+        Follower1.changeHP(-Follower0.AP,self.Field,PlayerID)
         Follower0.AttackFlag=1 #AttackFlagを攻撃済みに変更
         if self.Field[PlayerID].place[SelectFieldID].HP <= 0: #破壊判定処理
             self.Field[PlayerID].GoToCementery(SelectFieldID,self.Field)
@@ -106,7 +106,7 @@ class BattleSystem:
             self.Field[1-PlayerID].GoToCementery(SelectEnemyFieldID,self.Field)
             
     
-    def AttackFace(self,Follower0,EnemyPlayer):
+    def AttackFace(self,Follower0,EnemyPlayer,PlayerID):
         EnemyPlayer.changeHP(-Follower0.AP)
         Follower0.AttackFlag=1 #AttackFlagを攻撃済みに変更
         
@@ -175,7 +175,7 @@ class BattleSystem:
                     
                     elif SelectEnemyFieldID == 5:#相手の顔選択
                         EnemyPlayer = self.Field[1-PlayerID]
-                        self.AttackFace(SelectCard,EnemyPlayer)
+                        self.AttackFace(SelectCard,EnemyPlayer,PlayerID)
                     
                     else: print("0~6の適切な値を入力してください") #入力値がエラー
                 
