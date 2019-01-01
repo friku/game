@@ -59,7 +59,7 @@ class field:
         UseSpellFlag = Spell.PlaySpell(Field,PlayerID)
         if UseSpellFlag == True:
             self.cemetery.append(self.hand.pop(handID))
-        
+            
         
     def Marigan(self,):
         self.draw(3)
@@ -109,14 +109,27 @@ class BattleSystem:
     def AttackFace(self,Follower0,EnemyPlayer,PlayerID):
         EnemyPlayer.changeHP(-Follower0.AP)
         Follower0.AttackFlag=1 #AttackFlagを攻撃済みに変更
+    
         
-    def CostCheck(self,Field,cost):
-        if  cost <= Field.PP:
-            Field.PP -=cost
+    def CostCheck(self,Field,PlayerID,SelectHandID):
+        if Field[PlayerID].hand[SelectHandID].Enhance[0] <= Field[PlayerID].PP:#Enhanceが可能かPPを確認する。可能ならPPを減らす。実行するEnhanceの番号を代入する。
+            EnhanceCost = max([i for i in Field[PlayerID].hand[SelectHandID].Enhance if i <= Field[PlayerID].PP])
+            Field[PlayerID].PP -= EnhanceCost
+            Field[PlayerID].hand[SelectHandID].EnhanceNumber = Field[PlayerID].hand[SelectHandID].Enhance.index(EnhanceCost)
+            return True
+        elif  Field[PlayerID].hand[SelectHandID].cost <= Field[PlayerID].PP:
+            Field[PlayerID].PP -= Field[PlayerID].hand[SelectHandID].cost
             return True
         else:
             print("コストが足りません error")
             return False
+    
+    def EnhanceCheck(self,Field,PlayerID,SelectHandID):
+        
+        if Field[PlayerID].hand[SelectHandID].Enhance[0] >= Field[PlayerID].PP:return False
+        
+        [i for i in Field[PlayerID].hand[SelectHandID].Enhance if i <= Field[PlayerID].PP]
+        
     def setPP(self,Field):
         Field.PP = Field.MaxPP
         
@@ -183,7 +196,7 @@ class BattleSystem:
             elif SelectFieldID <=13:#自分の手札選択
                 SelectHandID = SelectFieldID - 5 
                 if SelectHandID >= len(self.Field[PlayerID].hand):print("Out of Hand error")#自分のHandにカードがなかったらエラー
-                elif self.CostCheck(self.Field[PlayerID],self.Field[PlayerID].hand[SelectHandID].cost) == False:print("PPがたりません error")
+                elif self.CostCheck(self.Field,PlayerID,SelectHandID) == False:print("PPがたりません error")
                 elif self.Field[PlayerID].hand[SelectHandID].cardType == "Spell": #スペルを選択した時
                     print(self.Field[PlayerID].hand[SelectHandID].name)
                     self.Field[PlayerID].PlaySpell(self.Field[PlayerID].hand[SelectHandID],self.Field,PlayerID,SelectHandID)

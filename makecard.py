@@ -8,9 +8,12 @@ Created on Sun Dec 30 02:45:08 2018
 from Utils import selectMyPlace,selectEnemyPlace,evolveChangeStatus
 
 class card:
-    def __init__(self,name,cost,):
+    def __init__(self,name,cost,Enhance=[100],Accelerate=None):
         self.name = name
         self.cost = cost
+        self.Enhance = Enhance
+        self.Accelerate = Accelerate
+        self.EnhanceNumber = -1 #0以上ならEnhanceを実行する。
     
     def fanfare(self,Field,PlayerID):
         print("fanfare pass")
@@ -22,8 +25,8 @@ class card:
     
 
 class follower(card):
-    def __init__(self,name,cost,AP,HP,EAP=2,EHP=2):
-        card.__init__(self,name,cost)
+    def __init__(self,name,cost,AP,HP,EAP=2,EHP=2,Enhance=[100],Accelerate=None):
+        card.__init__(self,name,cost,Enhance=Enhance,Accelerate=Accelerate)
         self.AP = AP
         self.HP = HP
         self.EAP = EAP
@@ -60,8 +63,8 @@ class Amulet(card):
         pass    
 
 class Spell(card):
-    def __init__(self,name,cost):
-        card.__init__(self,name,cost)
+    def __init__(self,name,cost,Enhance=[100],Accelerate=None):
+        card.__init__(self,name,cost,Enhance=Enhance,Accelerate=Accelerate)
         self.cardType = "Spell"
     
     def PlaySpell(self,Field,PlayerID):#オーバーライドして使う
@@ -195,7 +198,44 @@ class VileVioletDragon(follower):
         print(self.HP,plusHP)
         if self.HP >=1 and plusHP <=0:
             Field[PlayerID].draw(2)
-        return self.HP      
+        return self.HP   
+
+class Megalorca(follower):
+    def __init__(self,name="Megalorca",cost=2,AP=2,HP=2):
+        follower.__init__(self,name,cost,AP,HP)
+        self.AP = AP
+        self.HP = HP
+        self.AttackFlag = 1
+        self.cardType = "follower"
+    
+
+class WatersOfTheOrca(Spell):
+    def __init__(self,name="WatersOfTheOrca",cost=2,Enhance=[4,6,8,10]):
+        super().__init__(name,cost,Enhance=[4,6,8,10])
+        self.cardType = "Spell"
+        
+    def PlaySpell(self,Field,PlayerID):
+        if self.EnhanceNumber == -1:
+            Field[PlayerID].place.append(Megalorca())
+        elif self.EnhanceNumber == 0:
+            for i in range(2):
+                Field[PlayerID].place.append(Megalorca())
+        elif self.EnhanceNumber == 1:
+            for i in range(3):
+                Field[PlayerID].place.append(Megalorca())
+        elif self.EnhanceNumber == 2:
+            for i in range(4):
+                Field[PlayerID].place.append(Megalorca())
+        elif self.EnhanceNumber == 3:
+            for i in range(5):
+                Field[PlayerID].place.append(Megalorca())
+        
+        for i in range(5):
+            if len(Field[PlayerID].place) >=6:
+                Field[PlayerID].Extinction.append(Field[PlayerID].place.pop(5))
+        return True
+
+
         
         #戦闘準備用
 class BattleDeck:
