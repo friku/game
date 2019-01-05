@@ -5,7 +5,7 @@ Created on Sun Dec 30 02:45:08 2018
 
 @author: riku
 """
-from Utils import selectMyPlace,selectEnemyPlace,evolveChangeStatus
+from Utils import selectMyPlace,selectEnemyPlace,evolveChangeStatus,addRush,ReduceDamage
 
 class card:
     def __init__(self,name,cost,Enhance=[100],Accelerate=None):
@@ -23,6 +23,9 @@ class card:
         print("fanfare pass")
         pass
     
+    def EndPhase(self,Field,PlayerID):
+        pass
+    
 
 class follower(card):
     def __init__(self,name,cost,AP,HP,EAP=2,EHP=2,Enhance=[100],Accelerate=None):
@@ -35,9 +38,19 @@ class follower(card):
         self.MaxHP = HP
         self.AttackFlag = 1
         self.EvolveFlag = 0
+        self.RushFlag = 0
+        self.BaneFlag = 0
+        self.WardFlag = 0
+        self.ReduceDamage = 0
         self.cardType = "follower"
         
     def changeHP(self,plusHP,Field,PlayerID):
+        if self.ReduceDamage == -1:
+            plusHP = 0
+        elif self.ReduceDamage <= plusHP:
+            plusHP -= self.ReduceDamage
+        else:
+            plusHP = 0
         self.HP = self.HP + plusHP
         print(str(self.name) +"HP:" + str(self.HP))
         return self.HP
@@ -165,6 +178,12 @@ class ServantOfDisdain(follower):
         self.cardType = "follower"
     
     def changeHP(self,plusHP,Field,PlayerID):
+        if self.ReduceDamage == -1:
+            plusHP = 0
+        elif self.ReduceDamage <= plusHP:
+            plusHP -= self.ReduceDamage
+        else:
+            plusHP = 0
         self.HP = self.HP + plusHP
         print(str(self.name) +"_HP:" + str(self.HP))
         print(self.HP,plusHP)
@@ -193,6 +212,12 @@ class VileVioletDragon(follower):
         self.cardType = "follower"
     
     def changeHP(self,plusHP,Field,PlayerID):
+        if self.ReduceDamage == -1:
+            plusHP = 0
+        elif self.ReduceDamage <= plusHP:
+            plusHP -= self.ReduceDamage
+        else:
+            plusHP = 0
         self.HP = self.HP + plusHP
         print(str(self.name) +"_HP:" + str(self.HP))
         print(self.HP,plusHP)
@@ -211,7 +236,7 @@ class Megalorca(follower):
 
 class WatersOfTheOrca(Spell):
     def __init__(self,name="WatersOfTheOrca",cost=2,Enhance=[4,6,8,10]):
-        super().__init__(name,cost,Enhance=[4,6,8,10])
+        super().__init__(name,cost,Enhance=Enhance)
         self.cardType = "Spell"
         
     def PlaySpell(self,Field,PlayerID):
@@ -232,9 +257,25 @@ class WatersOfTheOrca(Spell):
         
         for i in range(5):
             if len(Field[PlayerID].place) >=6:
-                Field[PlayerID].Extinction.append(Field[PlayerID].place.pop(5))
+                Field[PlayerID].Extinction.append(Field[PlayerID].place.pop(5))#placeからあふれたカードを消滅
         return True
 
+class MasamuneRagingDragon(follower):
+    def __init__(self,name="MasamuneRagingDragon",cost=2,AP=2,HP=2):
+        super().__init__(self,name,cost,AP,HP)
+        self.cardType = "follower"
+        self.BaneFlag = 1 
+        
+        
+    def fanfare(self,Field,PlayerID):
+        print("fanfare:"+str(self.name))
+        if Field[PlayerID].MaxPP < 10:
+            pass
+        else:
+            for i in range(len(Field[PlayerID])):
+                addRush(Field,PlayerID,i)#突進付与
+                ReduceDamage(Field,PlayerID,i,-1)#ダメージ軽減
+        return True
 
         
         #戦闘準備用

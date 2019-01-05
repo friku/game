@@ -31,3 +31,10 @@ def evolveChangeStatus(ThisFollower):
     ThisFollower.HP +=ThisFollower.EHP
     ThisFollower.MaxAP +=ThisFollower.EAP
     ThisFollower.MaxHP +=ThisFollower.EHP
+    
+
+def addRush(Field,PlayerID,selectCard):
+    Field[PlayerID].place[selectCard].RushFlag = 1
+    
+def ReduceDamage(Field,PlayerID,selectCard,ReduceDamage):#ダメージ軽減
+    Field[PlayerID].place[selectCard].RushFlag = ReduceDamage
