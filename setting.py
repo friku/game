@@ -95,13 +95,15 @@ class BattleSystem:
     
     
     def fight(self,Follower0,Follower1,SelectFieldID,SelectEnemyFieldID,PlayerID):#交戦処理
-        Follower0.changeHP(-Follower1.AP,self.Field,PlayerID)
-        Follower1.changeHP(-Follower0.AP,self.Field,PlayerID)
-        Follower0.AttackFlag=1 #AttackFlagを攻撃済みに変更
-        if self.Field[PlayerID].place[SelectFieldID].HP <= 0: #破壊判定処理
-            self.Field[PlayerID].GoToCementery(SelectFieldID,self.Field)
-        if self.Field[1-PlayerID].place[SelectEnemyFieldID].HP <= 0: #破壊判定処理
-            self.Field[1-PlayerID].GoToCementery(SelectEnemyFieldID,self.Field)
+            Follower0.changeHP(-Follower1.AP,self.Field,PlayerID)
+            Follower1.changeHP(-Follower0.AP,self.Field,PlayerID)
+            Follower0.AttackFlag=1 #AttackFlagを攻撃済みに変更
+            if self.Field[PlayerID].place[SelectFieldID].HP <= 0 or self.Field[1-PlayerID].place[SelectFieldID].BaneFlag == 1: #破壊判定処理
+                self.Field[PlayerID].GoToCementery(SelectFieldID,self.Field)
+            if self.Field[1-PlayerID].place[SelectEnemyFieldID].HP <= 0 or self.Field[PlayerID].place[SelectFieldID].BaneFlag == 1: #破壊判定処理
+                self.Field[1-PlayerID].GoToCementery(SelectEnemyFieldID,self.Field)
+            
+
             
     
     def AttackFace(self,Follower0,EnemyPlayer,PlayerID):
@@ -185,6 +187,7 @@ class BattleSystem:
                             print("Enemy")
                             print(Enemy.name)
                             self.fight(SelectCard,Enemy,SelectFieldID,SelectEnemyFieldID,PlayerID)#交戦
+                            
                     elif SelectEnemyFieldID == 5 and self.Field[PlayerID].place[SelectFieldID].SummonFlag == 1 and self.Field[PlayerID].place[SelectFieldID].RushFlag == 1:
                         print(str(self.Field[PlayerID].place[SelectFieldID]) + "は顔を攻撃できません.突進持ち召喚酔い error")
                     elif SelectEnemyFieldID == 5:#相手の顔選択
