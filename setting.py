@@ -7,8 +7,6 @@ Created on Thu Dec 20 23:11:33 2018
 
 from makecard import follower
 
-
-
 class field:
     def __init__(self,playerName,BTDeck,PlayerID,EP):
         self.HP = 20
@@ -176,8 +174,10 @@ class BattleSystem:
                         self.Field[PlayerID].EP -=1
                         EvolveFlag = 1
                         self.Field[PlayerID].place[SelectFieldID].EvolveFlag = 1
+                    elif SelectEnemyFieldID <=5 and  self.Field[PlayerID].place[SelectFieldID].SummonFlag == 1 and (self.Field[PlayerID].place[SelectFieldID].RushFlag == 0 or self.Field[PlayerID].place[SelectFieldID].StormFlag == 0):
+                        print(str(self.Field[PlayerID].place[SelectFieldID]) + "は攻撃できません.召喚酔い error")#召喚酔い
                     elif SelectEnemyFieldID <=5 and  self.Field[PlayerID].place[SelectFieldID].AttackFlag == 1:
-                        print(str(self.Field[PlayerID].place[SelectFieldID]) + "は攻撃できません error")#召喚酔い・攻撃済みだったらエラー
+                        print(str(self.Field[PlayerID].place[SelectFieldID]) + "は攻撃できません.攻撃済み error")#攻撃済みだったらエラー
                     elif SelectEnemyFieldID <=4:#相手のPlace選択
                         if SelectEnemyFieldID >= len(self.Field[1-PlayerID].place):print("Out of Place error")#相手のPlaceにカードがなかったらエラー
                         else:
@@ -185,7 +185,8 @@ class BattleSystem:
                             print("Enemy")
                             print(Enemy.name)
                             self.fight(SelectCard,Enemy,SelectFieldID,SelectEnemyFieldID,PlayerID)#交戦
-                    
+                    elif SelectEnemyFieldID == 5 and self.Field[PlayerID].place[SelectFieldID].SummonFlag == 1 and self.Field[PlayerID].place[SelectFieldID].RushFlag == 1:
+                        print(str(self.Field[PlayerID].place[SelectFieldID]) + "は顔を攻撃できません.突進持ち召喚酔い error")
                     elif SelectEnemyFieldID == 5:#相手の顔選択
                         EnemyPlayer = self.Field[1-PlayerID]
                         self.AttackFace(SelectCard,EnemyPlayer,PlayerID)

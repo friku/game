@@ -36,9 +36,11 @@ class follower(card):
         self.EHP = EHP
         self.MaxAP = AP
         self.MaxHP = HP
-        self.AttackFlag = 1
+        self.SummonFlag = 1
+        self.AttackFlag = 0
         self.EvolveFlag = 0
         self.RushFlag = 0
+        self.StormFlag = 0
         self.BaneFlag = 0
         self.WardFlag = 0
         self.ReduceDamage = 0
@@ -56,6 +58,7 @@ class follower(card):
         return self.HP
     
     def StandbyPhase(self,):
+        self.SummonFlag = 0
         self.AttackFlag = 0
     
     def evolution(self,Field,PlayerID):
